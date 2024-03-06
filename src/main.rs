@@ -1,4 +1,5 @@
+mod cli;
+
 fn main() {
-    println!("New CLI")
-    return 0;
+    cli::main();
 }
