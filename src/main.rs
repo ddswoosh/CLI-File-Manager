@@ -4,5 +4,5 @@ use cache;
 
 
 fn main() {
-    cahce::run();
+    cache::run();
 }
