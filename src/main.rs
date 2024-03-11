@@ -1,5 +1,8 @@
-mod cli;
+mod cache;
+
+use cache;
+
 
 fn main() {
-    cli::main();
+    cahce::run();
 }

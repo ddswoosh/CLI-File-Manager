@@ -1,16 +1,16 @@
 use std::io;
 
 enum Action {
-    start,
-    mov,
-    nfil,
-    dfil,
-    ndir,
-    ddir,
-    grab,
-    open,
-    close,
-    search,
+    Start,
+    Mov,
+    Nfil,
+    Dfil,
+    Ndir,
+    Ddir,
+    Grab,
+    Open,
+    Close,
+    Search,
 }
 
 struct Node<T,Action> {
@@ -28,11 +28,9 @@ impl Node<String, String> {
             next: None,
             prev: None
         }
-    
-        &mut count += 1;    
 
+        *count += 1;    
     }
-
 }
 
 fn retrieve(idx: usize, node: Option<Box<Node<String, Action>>>) {
@@ -59,44 +57,43 @@ fn stage(check: String){
    let mut u_action: String = check;
 
    match u_action {
-        Action::nfil => avail = true, _;
-        Action::dfil => avail = true, _;
-        Action::ndir => avail = true,_;
-        Action::ddir => avail = true,_;
-        Action::mov => avail = true, _;
+        Action::Nfil => newFile(),
+        Action::Dfil => deleteFile(),
+        Action::Ndir => newDirectory(),
+        Action::Ddir => deleteDirectory(),
+        Action::Mov => move(),
         _ => println!("Cannot revert this function type. New/Delete file | New/Delete Directory | Move, are the only supported functions for reversion.")
    }
    
    if avail == true {
-        // run some fn
+        
    }
-   
 }
 
-fn move() {
-
+fn move(s: String) {
+    
 }
 
-fn newDirectory() {
-
-}
-
-fn removeDirectory() {
+fn newDirectory(s: Srting) {
 
 }
 
-fn newFile() {
+fn deleteDirectory(s: String) {
 
 }
 
-fn removeFile() {
+fn newFile(s: String) {
+
+}
+
+fn deleteFile(s: String) {
 
 }
 
 pub fn run() {
     let mut count: usize = 0;
 
-    let op1 = Node::new(String::new("History Start", Action::start));
+    let op1 = Node::new(String::from("History Start", Action::start));
 
     let mut head = Some(op1);
     let mut tail = Some(op1);
