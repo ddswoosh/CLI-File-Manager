@@ -1,35 +1,87 @@
 use std::io;
 
+
 enum Action {
     Start,
-    Mov,
-    Nfil,
-    Dfil,
-    Ndir,
-    Ddir,
     Grab,
+    Move,
+    Newfile,
+    Deletefile,
+    NewDirectory,
+    DeleteDirectory,
+    Drop,
     Open,
-    Close,
     Search,
 }
 
-struct Node<T,Action> {
+struct Grab<T> {
+    grab_name: T,
+}
+
+struct Mov<T> {
+    init_path: T,
+    end_path: T,
+}
+
+struct Nfil<T> {
+    file_name: T,
+    file_type: T,
+    cur_path: T,
+}
+
+struct Dfil<T> {
+    // Must be in current directory
+    file_name: T,
+}
+
+struct Ndir<T> {
+    // Creates in the current directory
+    directory_name: T,
+}
+
+struct Ddir<T> {
+    // Directory must be empty or files move to dump
+    directory_name: T,
+}
+
+struct Drop<Grab> {
+    // Will only allow if grab contains a file/folder
+    drop_name: Grab,
+}
+
+struct Open<T> {
+    // Name of the app used to open the file type (e.g. vim)
+    app_name: T,
+    file_name: T,
+    file_type: T
+}
+
+struct Search<T> {
+    // Look for a file starting from the user defined root directory. DFS Tree traversal.
+    root_dir: T,
+    key: T,
+}
+
+
+
+struct Node<T, Action> {
     val: T,
-    action: Action,
+    change, T
+    action1: Action,
+    action2: Option<Action>, 
     next: Option<Box<Node<T, Action>>>,
     prev: Option<Box<Node<T, Action>>>,
 }
 
-impl Node<String, String> {
-    fn new(val: String, action: Action) -> Self {
+impl Node<String, Action> {
+    fn new(val: String, action1: Action, action2: Option<Action>) -> Self {
         Node {
             val: val,
-            action: action,
+            action1: action1,
+            action2: None,
             next: None,
-            prev: None
+            prev: None,
         }
-
-        *count += 1;    
     }
 }
 
@@ -51,50 +103,84 @@ fn retrieve(idx: usize, node: Option<Box<Node<String, Action>>>) {
     }
 } 
 
-fn stage(check: String){
-   let mut avail: bool = false;
+fn stage(rev_type: String){
 
-   let mut u_action: String = check;
-
-   match u_action {
-        Action::Nfil => newFile(),
-        Action::Dfil => deleteFile(),
-        Action::Ndir => newDirectory(),
-        Action::Ddir => deleteDirectory(),
-        Action::Mov => move(),
+   match rev_type {
+        Action::Newfile => new_file(),
+        Action::Deletefile => delete_file(),
+        Action::NewDirectory => new_directory(),
+        Action::DeleteDirectory => delete_directory(),
+        Action::Move => mov(),
         _ => println!("Cannot revert this function type. New/Delete file | New/Delete Directory | Move, are the only supported functions for reversion.")
-   }
-   
-   if avail == true {
-        
    }
 }
 
-fn move(s: String) {
+impl Grab<String> {
+    fn move{name: String} {
+        cur_holding.push(name);    
+    }
+}
+
+
+impl Move<String> {
+    fn move{from: String, to: String, name: String} {
+        let x: String = grab(name);
+
+        if let Some(exists).is_some() = search(to) {
+            // move file with windows fun
+            let node = Node::new(name, from, to);
+        }
+        
+    }
+}
+
+struct List<T, Node> {
+    head: Option<Node>,
+    tail: Option<Node>,
+    count: T,
     
 }
 
-fn newDirectory(s: Srting) {
+impl List<usize, Node> {
+    fn initialize() {
+        let mut head = op1;
+        let mut tail = dummy;
+        let mut count: usize = 0; 
+        
+    }
 
+    fn add(node: Node) {
+        node.prev = tail;
+        tail.next = node;
+        tail = tail.next;
+        *count += 1;
+      
+    }
+    fn remove(idx: usize) [
+        if idx == count - 1 {
+            tail.prev.next = None;
+            tail = tail.prev;
+        }
+        else {
+            let mut cur = &tail;
+            let comp = count - idx;
+            let mut i: usize = count;
+
+            while i <= comp {
+                cur = cur.prev;
+                i -= 1;
+            }
+            cur.prev.next = cur.next;
+            cur.next.prev = cur.prev;
+        }    
+    ]
 }
 
-fn deleteDirectory(s: String) {
-
-}
-
-fn newFile(s: String) {
-
-}
-
-fn deleteFile(s: String) {
-
-}
 
 pub fn run() {
-    let mut count: usize = 0;
+    let mut cur_holding Vec<i32> = vec![];
 
-    let op1 = Node::new(String::from("History Start", Action::start));
+    let op1 = Node::new(String::new(), Action::start);
+    let dummy = Node::new(String::new(), Action::start);
 
-    let mut head = Some(op1);
-    let mut tail = Some(op1);
 }
