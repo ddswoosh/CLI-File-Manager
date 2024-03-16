@@ -21,19 +21,6 @@ impl Node<String, Action> {
     }
 }
 
-fn stage(rev_type: String){
-
-   match rev_type {
-        Action::Newfile => Controls::rev_new_file(),
-        Action::Deletefile => Controls::rev_delete_file(),
-        Action::NewDirectory => Controls::rev_new_directory(),
-        Action::DeleteDirectory => Controls::rev_delete_directory(),
-        Action::Move => Controls::rev_mov(),
-        _ => println!("Cannot revert this function type. New/Delete file | New/Delete Directory | Move, are the only supported functions for reversion.")
-   }
-}
-
-
 struct List<T, Node> {
     head: Option<Node>,
     tail: Option<Node>,
@@ -51,6 +38,7 @@ impl List<usize, Node> {
         node.prev = tail;
         tail.next = node;
         tail = tail.next;
+        
         *count += 1;   
     }
 

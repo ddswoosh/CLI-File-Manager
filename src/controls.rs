@@ -1,4 +1,5 @@
 use std::io;
+use std::fs;
 use std::collections::HashMap;
 
 enum Action {
@@ -56,14 +57,14 @@ struct Search<T> {
 
 fn hm() -> HashMap<K, V> {
     let mut file_map: HashMap<K, V> = HashMap::new();
-    file_map.insert("Python", ".py");
-    file_map.insert("C++", ".cpp");
-    file_map.insert("C", ".c");
-    file_map.insert("Rust", ".rs");
-    file_map.insert("Text", ".txt");
-    file_map.insert("PDF", ".pdf");
-    file_map.insert("Exe", ".exe");
-    file_map.insert("JSON", ".json");
+    file_map.insert("python", ".py");
+    file_map.insert("c++", ".cpp");
+    file_map.insert("c", ".c");
+    file_map.insert("rust", ".rs");
+    file_map.insert("text", ".txt");
+    file_map.insert("pdf", ".pdf");
+    file_map.insert("exe", ".exe");
+    file_map.insert("json", ".json");
 
     return file_map;
 }
