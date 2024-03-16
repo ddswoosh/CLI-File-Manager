@@ -24,11 +24,11 @@ impl Node<String, Action> {
 fn stage(rev_type: String){
 
    match rev_type {
-        Action::Newfile => new_file(),
-        Action::Deletefile => delete_file(),
-        Action::NewDirectory => new_directory(),
-        Action::DeleteDirectory => delete_directory(),
-        Action::Move => mov(),
+        Action::Newfile => Controls::rev_new_file(),
+        Action::Deletefile => Controls::rev_delete_file(),
+        Action::NewDirectory => Controls::rev_new_directory(),
+        Action::DeleteDirectory => Controls::rev_delete_directory(),
+        Action::Move => Controls::rev_mov(),
         _ => println!("Cannot revert this function type. New/Delete file | New/Delete Directory | Move, are the only supported functions for reversion.")
    }
 }
@@ -37,26 +37,24 @@ fn stage(rev_type: String){
 struct List<T, Node> {
     head: Option<Node>,
     tail: Option<Node>,
-    count: T,
-    
+    count: T,  
 }
 
 impl List<usize, Node> {
     fn initialize() {
         let mut head = op1;
         let mut tail = dummy;
-        let mut count: usize = 0; 
-        
+        let mut count: usize = 0;  
     }
 
     fn add(node: Node) {
         node.prev = tail;
         tail.next = node;
         tail = tail.next;
-        *count += 1;
-      
+        *count += 1;   
     }
-    fn remove(idx: usize) [
+
+    fn remove(idx: usize) {
         if idx == count - 1 {
             tail.prev.next = None;
             tail = tail.prev;
@@ -72,13 +70,14 @@ impl List<usize, Node> {
             }
             cur.prev.next = cur.next;
             cur.next.prev = cur.prev;
-        }    
-    ]
+        }   
+
+        *count -= 1;
+    }
 }
 
-
 pub fn run() {
-    let mut cur_holding Vec<i32> = vec![];
+    let mut cur_holding: [Option<String>; 1] = [None];
 
     let op1 = Node::new(String::new(), Action::start);
     let dummy = Node::new(String::new(), Action::start);
