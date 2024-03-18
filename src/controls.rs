@@ -1,5 +1,6 @@
 use std::io;
 use std::fs;
+use std::env;
 use std::collections::HashMap;
 
 enum Action {
@@ -124,12 +125,15 @@ impl Dfil<String> {
 }
 
 impl Ndir<String> {
-    fn new_directory(dir_name: String) {
+    fn new_directory(dir_name: String) -> Result<(), &'static str> {
         let cur_dir: String = //windows current directory;
-
-        if !cur_dir in cur_dir.children {
-            // cur.dir add new dir
+        let success: Result<(), std::io::Error> = fs::create_dir(dir_name);
+        
+        match success {
+            Ok(()) => return Ok(()),
+            Err(err) => return Err("Path at {} already exists", dir_name),
         }
+
     } 
 }
 
@@ -137,11 +141,26 @@ impl Ddir<String> {
     fn delete_directory(dir_name: String) {
         let cur_dir: String = //windows current directory;
 
-        if !dir_name in cur_dir.children {
-            println!("Folder does not exist in this directory");
-        } else {
-            // os.remove(dir_name);
+        let del: Result<(), std::io::Error> = fs::remove_dir(dir_name);
+
+        match del {
+            Ok(()) => return Ok(()),
+            Err(err) => return Err("The directory is not empty, please remove all contents or type 'Override' if you want to force
+            delete all child content. Type cancel to exit this function."),
         }
+
+        // read next input
+
+        if &mut input == "Override" {
+            return override_delete(dir_name);
+        } else {
+            // return to main
+        }
+    }
+
+    fn override_delete(dir_name: String) -> Result<()> {
+        fs::remove_dir_all(dir_name)?;
+        return Ok(())
     }
 }
 
@@ -151,18 +170,20 @@ impl Drop<T> {
     }
 }
 
-impl Open<String> {
+impl Open<String> -> Result<(), {
+    let cur_dir: String = // current directory
     let editors: [String, 4] = ["code, vim, notepad, sublime"];
 
     fn open(editor_name: String, file_name:) {
         if editor_name in editors {
-            // windows open file with said editor
+            // C# console in editor then file name (eg. vim file_name) will open foo.txt with vim
+            fs::File::open(file_name)
         }
     }
 }
 
 impl Search<String> {
-    fn search(root: String, find: String) -> Option<bool>{
+    fn search(root: String, find: String) -> Result<bool>{
         let mut q: Vec<i32> = vec![root];
         
         while q.len() > 1{
