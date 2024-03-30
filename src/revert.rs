@@ -89,6 +89,7 @@ impl RevDfil<String> {
     fn rev_delete_file(file_name: String) {
         // file name .strip() file_ext = (.py, .rs)
         new_file(file_name, file_ext);
+    }
 }
 
 impl Ndir<String> {

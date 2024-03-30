@@ -1,18 +1,14 @@
-use std::fs::OpenOptions;
-use std::io::prelude::*;
+use::std::io;
+use::std::fs;
 
-pub fn pipe() {
-    let mut file = OpenOptions::new()
-        .read(true)
-        .open(r"\\.\pipe\testpipe")
-        .unwrap();
+mod controls;
 
-
-    let mut buffer = String::new();
-
-
-    file.read_to_string(&mut buffer).unwrap();
-
-
-    println!("Received data: {}", buffer);
+pub fn read() => Result<(), String> {
+    let command = fs::read_to_string("dump/response.txt").parse()?;
+    match command {
+        String::from("ndir")=> new(new_directory),
+        Err(err) => String::from("Not able to parse command.")
+    }
+        
 }
+
