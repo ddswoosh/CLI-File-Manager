@@ -128,7 +128,7 @@ impl Dfil<String> {
 
 impl Ndir<String> {
     fn new_directory(dir_name: String) -> Result<(), &'static str> {
-        let cur_dir: String = //windows current directory;
+        // let cur_dir: String = windows current directory;
         let success: Result<(), std::io::Error> = fs::create_dir(dir_name);
         
         match success {
