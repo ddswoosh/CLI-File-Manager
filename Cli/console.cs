@@ -37,14 +37,14 @@ class Cli
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error writing to pipe: {ex.Message}");
+            Console.WriteLine($"Could not write to file {ex.Message}");
         }
     }
 
     private string ReadResponseFromFile(string filePath)
-    {    
-        return File.ReadAllText(filePath);      
-    
+    {
+        return File.ReadAllText(filePath);
+
     }
 }
 class Run

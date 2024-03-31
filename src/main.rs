@@ -1,15 +1,8 @@
-use std::thread;
-use std::time::Duration;
-
 mod integrate;
+mod controls;
 
 
 fn main() {
-    integrate::comms();
-    
-
-    
-    
-
+    integrate::read();
     
 }
