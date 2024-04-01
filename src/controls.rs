@@ -5,19 +5,19 @@ use std::collections::HashMap;
 use std::path::Path;
 use crate::integrate;
 
-enum Action {
+// enum Action {
 
-    Start,
-    Grab,
-    Move,
-    Newfile,
-    Deletefile,
-    NewDirectory,
-    DeleteDirectory,
-    Drop,
-    Open,
-    Search,
-}
+//     Start,
+//     Grab,
+//     Move,
+//     Newfile,
+//     Deletefile,
+//     NewDirectory,
+//     DeleteDirectory,
+//     Drop,
+//     Open,
+//     Search,
+// }
 
 pub struct Grab<T> {
     grab_name: T,
@@ -58,26 +58,28 @@ pub struct Search<String> {
     key: Option<String>,
 }
 
-// fn hm() -> HashMap<K, V> {
-//     let mut file_map: HashMap<K, V> = HashMap::new();
-//     file_map.insert("python", ".py");
-//     file_map.insert("c++", ".cpp");
-//     file_map.insert("c", ".c");
-//     file_map.insert("rust", ".rs");
-//     file_map.insert("text", ".txt");
-//     file_map.insert("pdf", ".pdf");
-//     file_map.insert("exe", ".exe");
-//     file_map.insert("json", ".json");
+pub fn hm() -> HashMap<String, String> {
+    let mut file_map: HashMap<String, String> = HashMap::new();
 
-//     return file_map;
-// }
+    file_map.insert("python".to_string(), ".py".to_string());
+    file_map.insert("java".to_string(), ".java".to_string());
+    file_map.insert("javascript".to_string(), ".js".to_string());
+    file_map.insert("c++".to_string(), ".cpp".to_string());
+    file_map.insert("c".to_string(), ".c".to_string());
+    file_map.insert("rust".to_string(), ".rs".to_string());
+    file_map.insert("text".to_string(), ".txt".to_string());
+    file_map.insert("pdf".to_string(), ".pdf".to_string());
+    file_map.insert("executable".to_string(), ".exe".to_string());
+    file_map.insert("json".to_string(), ".json".to_string());
 
-// fn hm_insert(full: String, ext: String) {
-//     let mut x: HashMap<K, V> = hm();
-//     &file_map.insert(full, ext);
+    return file_map;
+}
+
+pub fn hm_insert(full: String, ext: String, hashmap: &mut HashMap<String, String>) {
+    hashmap.insert(full, ext);
     
-//     println!("If your entered file type is not supported in Windows, the file may not open as intended.");
-// }
+    println!("If your entered file type is not supported in Windows, the file may not open as intended.");
+}
 
 // impl Grab<String> {
 //     fn grab(name: String) {
@@ -103,29 +105,34 @@ pub struct Search<String> {
 // }
 
 
-// impl Nfil<String> {
-//     fn new_file(file_name: String, file_ext: String) {
-//         let cur_dir: String = //windows current directory;
+impl Nfil<String> {
+    pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>) -> Result<(), String> {
 
-//         if hm.get(&file_ext).is_some() {
-//             if !file_name in cur_dir.children {
-//                 // cur.dir add new file, e.g. ("python main" == create main.py)
-//             }
-//         } 
-//     } 
-// }
+        if hm.get(&file_ext).is_some() {
+            let ext: &String = hm.get(&file_ext).unwrap();
+            let name: String = file_name + &ext;
 
-// impl Dfil<String> {
-//     fn delete_file(file_name: String) {
-//         let cur_dir: String = //windows current directory;
+            fs::File::create(name);
+            return Ok(());
 
-//         if !file_name in cur_dir.children {
-//             println!("File does not exist in this directory");
-//         } else {
-//             // os.remove(file_name);
-//         }
-//     }
-// }
+        } else {
+            return Err("Your chosen file type does not yet exist. To create this extension, please type 
+            'add, full extension name, extension' (i.e. add python .py).".to_string());
+        } 
+    } 
+}
+
+impl Dfil<String> {
+    pub fn delete_file(file_name: String) -> Result<(), String> {
+        let success = fs::remove_file(file_name);
+        
+        match success {
+            Ok(()) => return Ok(()),
+            Err(err) => Err("Check the file exists or the your spelling is correct.".to_string())
+        }
+
+    }
+}
 
 impl Ndir<String> {
     pub fn new_directory(dir_name: String) -> Result<(), String> {
@@ -152,9 +159,10 @@ impl Ddir<String> {
     }
     pub fn override_delete(dir_name: String) -> Result<(), String> {
         let del: Result<(), std::io::Error> = fs::remove_dir_all(dir_name);
+        
         match del {
             Ok(()) => return Ok(()),
-            Err(err) => return Err("Non fatal error".to_string()),
+            Err(err) => return Err("Non-fatal error".to_string()),
         }
     }
 }
