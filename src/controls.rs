@@ -3,6 +3,9 @@ use std::fs;
 use std::env;
 use std::collections::HashMap;
 use std::path::Path;
+use std::path::PathBuf;
+use std::fmt::Display;
+
 use crate::integrate;
 
 // enum Action {
@@ -130,7 +133,6 @@ impl Dfil<String> {
             Ok(()) => return Ok(()),
             Err(err) => Err("Check the file exists or the your spelling is correct.".to_string())
         }
-
     }
 }
 
@@ -142,7 +144,6 @@ impl Ndir<String> {
             Ok(()) => return Ok(()),
             Err(err) => return Err("Path already exists".to_string())
         }
-
     } 
 }
 
@@ -229,7 +230,15 @@ impl Ddir<String> {
 
 
 
-// fn working_dir() -> Result<PathBuf> {
-//     let cur = env::current_dir()?
-//     return Ok(cur);
-// }
+pub fn working_dir(path: &dyn Display) -> Result<(), String> {
+    let cur: Result<PathBuf, std::io::Error> = env::current_dir();
+    
+    match cur {
+        Ok(cur) => {
+            path = &cur.display();
+            return Ok(())
+        },
+        Err(err) => Err("Error getting current directory.".to_string())
+    }
+    
+}
