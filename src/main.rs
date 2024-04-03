@@ -9,12 +9,8 @@ mod controls;
 
 fn main() { 
 
-    
-    let temp = &env::current_dir().expect("Path not found");
-    let mut path: &dyn Display = &temp.display();
-
     let mut hm: &mut HashMap<String, String> = &mut controls::hm();
 
-    integrate::read(&mut hm, &mut path);
+    integrate::read(&mut hm);
     
 }

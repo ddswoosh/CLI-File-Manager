@@ -90,26 +90,22 @@ pub fn hm_insert(full: String, ext: String, hashmap: &mut HashMap<String, String
 //     }
 // }
 
-// impl Move<String> {
-//     fn mov(from: String, to: String, name: String) -> Result<(), E> {
-//         let cur: String = search(from);
+impl Mov<String> {
+    pub fn mov(from: String, to: String, path: PathBuf) -> Result<(), String> {     
 
-//         // Search will check if the from file is valid.
-//         // If there was an error, it would be with the destination.
+        let attempt: Result<(), std::io::Error> = fs::rename(path, to);
 
-//         let attempt: Result<(), E> = fs::rename(cur, to);
-
-//         match attempt {
-//             Ok(()) => Ok("File successfully created "),
-//             Err(err) => Err("Destination is not valid, please try again. ")
-//         }
-
-//     }
-// }
+        match attempt {
+            Err(err) => Err("Destination is not valid, please try again.".to_string())
+        };
+        
+        return Ok(());
+    }
+}
 
 
 impl Nfil<String> {
-    pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>) -> Result<(), String> {
+    pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>, path: PathBuf) -> Result<(), String> {
 
         if hm.get(&file_ext).is_some() {
             let ext: &String = hm.get(&file_ext).unwrap();
@@ -126,7 +122,7 @@ impl Nfil<String> {
 }
 
 impl Dfil<String> {
-    pub fn delete_file(file_name: String) -> Result<(), String> {
+    pub fn delete_file(file_name: String, path: PathBuf) -> Result<(), String> {
         let success = fs::remove_file(file_name);
         
         match success {
@@ -137,7 +133,7 @@ impl Dfil<String> {
 }
 
 impl Ndir<String> {
-    pub fn new_directory(dir_name: String) -> Result<(), String> {
+    pub fn new_directory(dir_name: String, path: PathBuf) -> Result<(), String> {
         let success: Result<(), std::io::Error> = fs::create_dir(dir_name);
         
         match success {
@@ -148,7 +144,7 @@ impl Ndir<String> {
 }
 
 impl Ddir<String> {
-    pub fn delete_directory(dir_name: String) -> Result<(), String> {
+    pub fn delete_directory(dir_name: String, path: PathBuf) -> Result<(), String> {
         let del: Result<(), std::io::Error> = fs::remove_dir(dir_name);
 
         match del {
@@ -158,7 +154,7 @@ impl Ddir<String> {
         }
 
     }
-    pub fn override_delete(dir_name: String) -> Result<(), String> {
+    pub fn override_delete(dir_name: String, path: PathBuf) -> Result<(), String> {
         let del: Result<(), std::io::Error> = fs::remove_dir_all(dir_name);
         
         match del {
@@ -230,15 +226,8 @@ impl Ddir<String> {
 
 
 
-pub fn working_dir(path: &dyn Display) -> Result<(), String> {
+pub fn working_dir() -> Result<PathBuf, std::io::Error> {
     let cur: Result<PathBuf, std::io::Error> = env::current_dir();
     
-    match cur {
-        Ok(cur) => {
-            path = &cur.display();
-            return Ok(())
-        },
-        Err(err) => Err("Error getting current directory.".to_string())
-    }
-    
+    return Ok(cur?);  
 }
