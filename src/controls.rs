@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 use std::fmt::Display;
+use std::process::Command;
 
 use crate::integrate;
 
@@ -22,10 +23,11 @@ use crate::integrate;
 //     Search,
 // }
 
+pub struct Environment;
+
 pub struct FileArray<PathBuf> {
     cur_holding: PathBuf,
-    name: PathBuf,
-    
+    name: PathBuf,  
 }
 
 pub struct Mov<T> {
@@ -83,7 +85,7 @@ impl FileArray<PathBuf> {
     }
 
     pub fn grab(name: PathBuf, cur_holding: &mut [Option<PathBuf>; 1]) {
-        let mut cur_path: PathBuf = working_dir().expect("Err");
+        let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(name);
 
         cur_holding[0] = Some(cur_path); 
@@ -92,7 +94,7 @@ impl FileArray<PathBuf> {
 
 impl Mov<String> {
     pub fn mov(from: String, to: String) -> Result<(), String> {
-        let mut cur_path: PathBuf = working_dir().expect("Err");
+        let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(from);
         
         let attempt: Result<(), std::io::Error> = fs::rename(cur_path, to);
@@ -161,61 +163,99 @@ impl Dir<String> {
     }
 }
 
-// impl Open<String> -> Result<(), {
-//     let cur_dir: String = // current directory
-//     let editors: [String, 4] = ["code, vim, notepad, sublime"];
-
-//     fn open(editor_name: String, file_name:) {
-//         if editor_name in editors {
-//             // C# console in editor then file name (eg. vim file_name) will open foo.txt with vim
-//             fs::File::open(file_name)
-//         }
-//     }
-// }
-
-// impl Search<String> {
-//     fn list_dir(root: String>) -> Option<Vec<String>> {
-//         let mut q: Vec<String> = vec![root];
-//         let mut res: Vec<Vec<String>> = vec![];
+impl Open<String> {
+    pub fn open(editor_name: String, file_name: String) -> Result<(), String> {
+        // need to manually add path to each editor later, vs code works for right now
         
-//         while q.len() > 0 {
-//             let mut level: Vec<String> = vec![];
+        let mut editors: Vec<String> = vec!["code".to_string(), "vim".to_string(), "notepad".to_string(), "sublime".to_string()];
 
-//             for children in fs::read_dir(root)? {
-//                 let cur = children?;
-//                 match cur {
-//                     Err(err) => return Some(res);
-//                 }
+        let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
+        cur_path.push(&file_name);
 
-//                 let cd: String = cur.path();
+        for i in editors.iter() {
+             if editor_name == *i {
+                let status = Command::new("C:\\Users\\ddswoosh\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe").arg(cur_path).status();
 
-//                 if cd.is_dir() {
-//                     q.push(&cd);
-//                 } else {
-//                     level.push(cd);
-//                 }
-//             }
+                match status {
+                    Ok(status) => return Ok(()),
+                    Err(err) => return Err("Could not open editor.".to_string())
+                };
+             }
+        }
 
-//             res.push(level)
-//         }
+        return Err("Editor not found in vector. If you want to add your own editor, type help and follow the add editor instructions.".to_string());
+    }
+
+    // fn add_editor(editor_name: String, path: PathBuf, editors: mut Vec<String>) {
+
+
+    // }
+}
+
+impl Search<String> {
+    // fn list_dir(root: String>) -> Option<Vec<String>> {
+    //     let mut q: Vec<String> = vec![root];
+    //     let mut res: Vec<Vec<String>> = vec![];
         
-//         if res.len() > 0 {
-//             return Some(res)
-//         }
+    //     while q.len() > 0 {
+    //         let mut level: Vec<String> = vec![];
 
-//         return None;
-//     }
+    //         for children in fs::read_dir(root)? {
+    //             let cur = children?;
+    //             match cur {
+    //                 Err(err) => return Some(res);
+    //             }
 
-//     fn find_file(find: String) -> Result<bool, String> {
-//         match Path::new(find).exists() {
-//             true => Ok(true),
-//             false => Err("File does not exist or permissions are restricted.".to_string())
-//         }
-//     }
-// }
+    //             let cd: String = cur.path();
 
-pub fn working_dir() -> Result<PathBuf, std::io::Error> {
-    let cur: Result<PathBuf, std::io::Error> = env::current_dir();
-    
-    return Ok(cur?);  
+    //             if cd.is_dir() {
+    //                 q.push(&cd);
+    //             } else {
+    //                 level.push(cd);
+    //             }
+    //         }
+
+    //         res.push(level)
+    //     }
+        
+    //     if res.len() > 0 {
+    //         return Some(res)
+    //     }
+
+    //     return None;
+    // }
+
+    pub fn find_file(find: String) -> Result<(), String> {
+        match Path::new(&find).exists() {
+            true => Ok(()),
+            false => Err("File does not exist or permissions are restricted.".to_string())
+        }
+    }
+}
+
+impl Environment {
+    pub fn working_dir() -> Result<PathBuf, std::io::Error> {
+        let cur: Result<PathBuf, std::io::Error> = env::current_dir();
+        
+        return Ok(cur?);  
+    }
+
+    pub fn change_dir(change: String) -> Result<(), String> {
+        let exists: Result<(), String> = Search::find_file(change);
+
+        match exists {
+            Err(err) => return Err("Change to directory does not exsist within the scope of your current directory.".to_string())
+        }
+        
+        let cur: Result<PathBuf, std::io::Error> = Self::working_dir();
+        let new_path: PathBuf = cur.push(&change);
+
+        let success: Result<(), std::io::Error> = env::set_current_dir(new_path);
+
+        match success {
+            Ok(()) => return Ok(()),
+            Err(err) => return Err("Error changing directory.".to_string())
+        }
+
+    }
 }
