@@ -22,8 +22,10 @@ use crate::integrate;
 //     Search,
 // }
 
-pub struct Grab<T> {
-    grab_name: T,
+pub struct FileArray<PathBuf> {
+    cur_holding: PathBuf,
+    name: PathBuf,
+    
 }
 
 pub struct Mov<T> {
@@ -31,25 +33,14 @@ pub struct Mov<T> {
     end_path: T,
 }
 
-pub struct Nfil<T> {
-    file_name: T,
-    file_type: T,
+pub struct Fil<String> {
+    file_name: String,
+    file_type: String,
 }
 
-pub struct Dfil<T> {
-    file_name: T,
-}
 
-pub struct Ndir<T> {
-    directory_name: T,
-}
-
-pub struct Ddir<T> {
-    directory_name: T,
-}
-
-pub struct Drop<T> {
-    held: T,
+pub struct Dir<String> {
+    directory_name: String,
 }
 
 pub struct Open<T> {
@@ -84,27 +75,37 @@ pub fn hm_insert(full: String, ext: String, hashmap: &mut HashMap<String, String
     println!("If your entered file type is not supported in Windows, the file may not open as intended.");
 }
 
-// impl Grab<String> {
-//     fn grab(name: String) {
-//         cur_holding[0] = name;    
-//     }
-// }
+impl FileArray<PathBuf> {
+    pub fn drop(cur_holding: &mut [Option<PathBuf>; 1]) {
+        cur_holding[0] = None;   
+        
+        println!("{:?}", cur_holding);
+    }
+
+    pub fn grab(name: PathBuf, cur_holding: &mut [Option<PathBuf>; 1]) {
+        let mut cur_path: PathBuf = working_dir().expect("Err");
+        cur_path.push(name);
+
+        cur_holding[0] = Some(cur_path); 
+    }
+}
 
 impl Mov<String> {
-    pub fn mov(from: String, to: String, path: PathBuf) -> Result<(), String> {     
-
-        let attempt: Result<(), std::io::Error> = fs::rename(path, to);
+    pub fn mov(from: String, to: String) -> Result<(), String> {
+        let mut cur_path: PathBuf = working_dir().expect("Err");
+        cur_path.push(from);
+        
+        let attempt: Result<(), std::io::Error> = fs::rename(cur_path, to);
 
         match attempt {
-            Err(err) => Err("Destination is not valid, please try again.".to_string())
-        };
-        
-        return Ok(());
+            Ok(()) => Ok(()),
+            Err(err) =>Err("Destination is not valid, please try again.".to_string())
+        }
     }
 }
 
 
-impl Nfil<String> {
+impl Fil<String> {
     pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>, path: PathBuf) -> Result<(), String> {
 
         if hm.get(&file_ext).is_some() {
@@ -119,9 +120,7 @@ impl Nfil<String> {
             'add, full extension name, extension' (i.e. add python .py).".to_string());
         } 
     } 
-}
 
-impl Dfil<String> {
     pub fn delete_file(file_name: String, path: PathBuf) -> Result<(), String> {
         let success = fs::remove_file(file_name);
         
@@ -132,7 +131,7 @@ impl Dfil<String> {
     }
 }
 
-impl Ndir<String> {
+impl Dir<String> {
     pub fn new_directory(dir_name: String, path: PathBuf) -> Result<(), String> {
         let success: Result<(), std::io::Error> = fs::create_dir(dir_name);
         
@@ -141,9 +140,7 @@ impl Ndir<String> {
             Err(err) => return Err("Path already exists".to_string())
         }
     } 
-}
 
-impl Ddir<String> {
     pub fn delete_directory(dir_name: String, path: PathBuf) -> Result<(), String> {
         let del: Result<(), std::io::Error> = fs::remove_dir(dir_name);
 
@@ -163,13 +160,6 @@ impl Ddir<String> {
         }
     }
 }
-
-
-// impl Drop<T> {
-//     fn drop() {
-//         cur_holding[0] = None;    
-//     }
-// }
 
 // impl Open<String> -> Result<(), {
 //     let cur_dir: String = // current directory
@@ -223,8 +213,6 @@ impl Ddir<String> {
 //         }
 //     }
 // }
-
-
 
 pub fn working_dir() -> Result<PathBuf, std::io::Error> {
     let cur: Result<PathBuf, std::io::Error> = env::current_dir();

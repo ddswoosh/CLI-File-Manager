@@ -9,8 +9,8 @@ mod controls;
 
 fn main() { 
 
-    let mut hm: &mut HashMap<String, String> = &mut controls::hm();
+    let mut cur_holding: [Option<PathBuf>; 1] = [None];
+    let mut hm: HashMap<String, String> = controls::hm();
 
-    integrate::read(&mut hm);
-    
+    integrate::read(&mut hm, &mut cur_holding);
 }
