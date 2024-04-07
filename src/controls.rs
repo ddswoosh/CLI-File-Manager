@@ -164,68 +164,68 @@ impl Dir<String> {
 }
 
 impl Open<String> {
-    pub fn open(editor_name: String, file_name: String) -> Result<(), String> {
-        // need to manually add path to each editor later, vs code works for right now
-        
-        let mut editors: Vec<String> = vec!["code".to_string(), "vim".to_string(), "notepad".to_string(), "sublime".to_string()];
-
+    pub fn open(editor_name: String, file_name: String, editors: &mut HashMap<String, String>) -> Result<(), String> {
         let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(&file_name);
 
-        for i in editors.iter() {
-             if editor_name == *i {
-                let status = Command::new("C:\\Users\\ddswoosh\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe").arg(cur_path).status();
 
-                match status {
-                    Ok(status) => return Ok(()),
-                    Err(err) => return Err("Could not open editor.".to_string())
-                };
-             }
+        if editors.get(&editor_name).is_some() {
+            let status = Command::new(editors.get(&editor_name).unwrap()).arg(cur_path).status();
+
+            match status {
+                Ok(status) => return Ok(()),
+                Err(err) => return Err("Could not open editor.".to_string())
+            };     
         }
 
-        return Err("Editor not found in vector. If you want to add your own editor, type help and follow the add editor instructions.".to_string());
+        return Err("Editor not found. If you want to add your own editor, type help and follow the add editor instructions.".to_string());
     }
 
-    // fn add_editor(editor_name: String, path: PathBuf, editors: mut Vec<String>) {
+    pub fn add_editor(editor_name: String, path: String, editors: &mut HashMap<String, String>) -> Result<(), String> {
+        let success: Option<String> = editors.insert(editor_name, path);
 
-
-    // }
+        match success { 
+            Some(_) => return Ok(()),
+            None => return Err("Error adding editor to list.".to_string())
+        }
+    }
 }
 
 impl Search<String> {
-    // fn list_dir(root: String>) -> Option<Vec<String>> {
-    //     let mut q: Vec<String> = vec![root];
-    //     let mut res: Vec<Vec<String>> = vec![];
+    pub fn list_dir(root: String) -> Result<(), String> {
+        let mut children: Vec<PathBuf> = vec![];
+
+        let mut cur: PathBuf = Environment::working_dir().unwrap();
+
+        cur.push(root);
         
-    //     while q.len() > 0 {
-    //         let mut level: Vec<String> = vec![];
+        if cur.is_dir() {
+            for child in fs::read_dir(cur).unwrap() {
+                let child: fs::DirEntry = child.unwrap();
+                let mut path: PathBuf = child.path();
+    
+                if path.is_dir() {
+                    path.push("-> Directory");
+                    children.push(path);
+                } else {
+                    path.push("-> File");
+                    children.push(path);
+                }
+            }
+        } else {
+            return Err("This file name is not of type: Directory.".to_string());
+        }
 
-    //         for children in fs::read_dir(root)? {
-    //             let cur = children?;
-    //             match cur {
-    //                 Err(err) => return Some(res);
-    //             }
+        println!("{:?}", children);
 
-    //             let cd: String = cur.path();
+        if children.len() == 0 {
+            return Err("Directory has no children.".to_string());
+        } else {
+            return Ok(());
+        }
+    }
 
-    //             if cd.is_dir() {
-    //                 q.push(&cd);
-    //             } else {
-    //                 level.push(cd);
-    //             }
-    //         }
-
-    //         res.push(level)
-    //     }
-        
-    //     if res.len() > 0 {
-    //         return Some(res)
-    //     }
-
-    //     return None;
-    // }
-
-    pub fn find_file(find: String) -> Result<(), String> {
+    pub fn find_file(find: &String) -> Result<(), String> {
         match Path::new(&find).exists() {
             true => Ok(()),
             false => Err("File does not exist or permissions are restricted.".to_string())
@@ -241,21 +241,24 @@ impl Environment {
     }
 
     pub fn change_dir(change: String) -> Result<(), String> {
-        let exists: Result<(), String> = Search::find_file(change);
+        let exists: Result<(), String> = Search::find_file(&change);
 
         match exists {
+            Ok(()) => {
+                let mut cur: PathBuf = Self::working_dir().unwrap();
+                cur.push(change);
+
+                println!("{:?}", cur.display());
+
+                let success: Result<(), std::io::Error> = env::set_current_dir(cur);
+
+                match success {
+                    Ok(()) => return Ok(()),
+                    Err(err) => return Err("Error changing directory.".to_string())
+                }
+            }
+
             Err(err) => return Err("Change to directory does not exsist within the scope of your current directory.".to_string())
         }
-        
-        let cur: Result<PathBuf, std::io::Error> = Self::working_dir();
-        let new_path: PathBuf = cur.push(&change);
-
-        let success: Result<(), std::io::Error> = env::set_current_dir(new_path);
-
-        match success {
-            Ok(()) => return Ok(()),
-            Err(err) => return Err("Error changing directory.".to_string())
-        }
-
     }
 }
