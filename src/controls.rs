@@ -81,8 +81,6 @@ impl FileArray<PathBuf> {
     pub fn drop(cur_holding: &mut [Option<PathBuf>; 1]) -> Result<(), String> {
         cur_holding[0] = None;  
         
-        println!("{:?}", cur_holding);
-
         return Ok(());
     }
 
@@ -91,9 +89,7 @@ impl FileArray<PathBuf> {
         cur_path.push(name);
 
         cur_holding[0] = Some(cur_path);
-
-        println!("{:?}", cur_holding);
-
+        
         match cur_path {
             _ => return Ok(()),
             _ => return Err("Could not grab.".to_string())
@@ -114,7 +110,6 @@ impl Mov<String> {
         }
     }
 }
-
 
 impl Fil<String> {
     pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>) -> Result<(), String> {
@@ -176,7 +171,6 @@ impl Open<String> {
     pub fn open(editor_name: String, file_name: String, editors: &mut HashMap<String, String>) -> Result<(), String> {
         let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(&file_name);
-
 
         if editors.get(&editor_name).is_some() {
             let status = Command::new(editors.get(&editor_name).unwrap()).arg(cur_path).status();

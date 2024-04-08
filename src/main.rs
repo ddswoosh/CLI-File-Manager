@@ -6,7 +6,6 @@ use std::env;
 mod integrate;
 mod controls;
 
-
 fn main() { 
     let mut editors: HashMap<String, String> = HashMap::new();
     editors.insert("code".to_string(), "C:\\Users\\ddswoosh\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe".to_string());

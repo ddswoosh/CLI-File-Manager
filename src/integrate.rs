@@ -30,7 +30,6 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
         return Err("Command not accepted, please type help to see the list of all commands.".to_string());
     }
 
-
     match command {
         "nd" => controls::Dir::new_directory(name.to_string(), path),
         "dd" => controls::Dir::delete_directory(name.to_string(), path),
