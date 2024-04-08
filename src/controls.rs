@@ -6,6 +6,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::fmt::Display;
 use std::process::Command;
+use std::string::String;
 
 use crate::integrate;
 
@@ -261,6 +262,17 @@ impl Environment {
             }
 
             Err(err) => return Err("Change to directory does not exsist within the scope of your current directory.".to_string())
+        }
+    }
+}
+
+fn dump(text: Result<(), String>) -> bool {
+    
+    match text {
+        Ok(()) => return false,
+        Err(err) => {
+            fs::write("dump/response.txt", text.unwrap());
+            return true;
         }
     }
 }
