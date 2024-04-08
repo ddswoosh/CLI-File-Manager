@@ -9,19 +9,18 @@ use std::process::Command;
 
 use crate::integrate;
 
-// enum Action {
+enum Action {
 
-//     Start,
-//     Grab,
-//     Move,
-//     Newfile,
-//     Deletefile,
-//     NewDirectory,
-//     DeleteDirectory,
-//     Drop,
-//     Open,
-//     Search,
-// }
+    Grab,
+    Drop,
+    Move,
+    Newfile,
+    Deletefile,
+    NewDirectory,
+    DeleteDirectory,
+    Open,
+    Search,
+}
 
 pub struct Environment;
 
@@ -54,7 +53,7 @@ pub struct Search<String> {
     key: Option<String>,
 }
 
-pub fn hm() -> HashMap<String, String> {
+pub fn file_ext() -> HashMap<String, String> {
     let mut file_map: HashMap<String, String> = HashMap::new();
 
     file_map.insert("python".to_string(), ".py".to_string());
@@ -71,10 +70,10 @@ pub fn hm() -> HashMap<String, String> {
     return file_map;
 }
 
-pub fn hm_insert(full: String, ext: String, hashmap: &mut HashMap<String, String>) {
+pub fn file_ext_insert(full: String, ext: String, hashmap: &mut HashMap<String, String>) -> &mut HashMap<String, String> {
     hashmap.insert(full, ext);
-    
-    println!("If your entered file type is not supported in Windows, the file may not open as intended.");
+
+    return hashmap;
 }
 
 impl FileArray<PathBuf> {
@@ -89,7 +88,7 @@ impl FileArray<PathBuf> {
         cur_path.push(name);
 
         cur_holding[0] = Some(cur_path);
-        
+
         match cur_path {
             _ => return Ok(()),
             _ => return Err("Could not grab.".to_string())
