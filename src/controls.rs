@@ -78,17 +78,26 @@ pub fn hm_insert(full: String, ext: String, hashmap: &mut HashMap<String, String
 }
 
 impl FileArray<PathBuf> {
-    pub fn drop(cur_holding: &mut [Option<PathBuf>; 1]) {
-        cur_holding[0] = None;   
+    pub fn drop(cur_holding: &mut [Option<PathBuf>; 1]) -> Result<(), String> {
+        cur_holding[0] = None;  
         
         println!("{:?}", cur_holding);
+
+        return Ok(());
     }
 
-    pub fn grab(name: PathBuf, cur_holding: &mut [Option<PathBuf>; 1]) {
-        let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
+    pub fn grab(name: PathBuf, cur_holding: &mut [Option<PathBuf>; 1]) -> Result<(), String>{
+        let mut cur_path: PathBuf = Environment::working_dir().unwrap();
         cur_path.push(name);
 
-        cur_holding[0] = Some(cur_path); 
+        cur_holding[0] = Some(cur_path);
+
+        println!("{:?}", cur_holding);
+
+        match cur_path {
+            _ => return Ok(()),
+            _ => return Err("Could not grab.".to_string())
+        }
     }
 }
 
@@ -108,7 +117,7 @@ impl Mov<String> {
 
 
 impl Fil<String> {
-    pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>, path: PathBuf) -> Result<(), String> {
+    pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>) -> Result<(), String> {
 
         if hm.get(&file_ext).is_some() {
             let ext: &String = hm.get(&file_ext).unwrap();
@@ -235,7 +244,7 @@ impl Search<String> {
 
 impl Environment {
     pub fn working_dir() -> Result<PathBuf, std::io::Error> {
-        let cur: Result<PathBuf, std::io::Error> = env::current_dir();
+        let cur: Result<PathBuf, std::io::Error> = env::current_dir();  
         
         return Ok(cur?);  
     }
