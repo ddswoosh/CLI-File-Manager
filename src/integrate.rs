@@ -5,13 +5,15 @@ use std::fs;
 
 use crate::controls;
 
-pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], editors: &mut HashMap<String, String>, cur_command: &mut String) -> Result<(), String> {
+pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], editors: &mut HashMap<String, String>, cur_command: &mut String) -> Result<String, String> {
     let path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
 
-    let cin = fs::read_to_string("dump/command.txt").map_err(|e| e.to_string())?;
-    *cur_command = cin;
+    let cin: String = fs::read_to_string("dump/command.txt").map_err(|e| e.to_string())?;
+    
+    *cur_command = cin.clone();
 
     let vec: Vec<&str> = cin.split_whitespace().collect();
+
     
     let mut command: &str = "";
     let mut name: &str = "";
@@ -33,21 +35,19 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
     }
 
     match command {
-        "nd" => controls::Dir::new_directory(name.to_string(), path),
-        "dd" => controls::Dir::delete_directory(name.to_string(), path),
-        "odd" => controls::Dir::override_delete(name.to_string(), path),
-        "nf" => controls::Fil::new_file(name.to_string(), ext.to_string(), hashmap),
-        "df" => controls::Fil::delete_file(name.to_string(), path),
-        "mov" => controls::Mov::mov(name.to_string(), ext.to_string()),
-        "grab" => controls::FileArray::grab(name.into(), cur_holding),
-        "drop" => controls::FileArray::drop(cur_holding),
-        "open" => controls::Open::open(ext.to_string(), name.to_string(), editors),
-        "add" => controls::Open::add_editor(name.to_string(), ext.to_string(), editors),
-        "cd" => controls::Environment::change_dir(name.to_string()),
-        "list" => controls::Search::list_dir(name.to_string()),
+        "nd" => return controls::Dir::new_directory(name.to_string(), path),
+        "dd" => return controls::Dir::delete_directory(name.to_string(), path),
+        "odd" => return controls::Dir::override_delete(name.to_string(), path),
+        "nf" => return controls::Fil::new_file(name.to_string(), ext.to_string(), hashmap),
+        "df" => return controls::Fil::delete_file(name.to_string(), path),
+        "mov" => return controls::Mov::mov(name.to_string(), ext.to_string()),
+        "grab" => return controls::FileArray::grab(name.into(), cur_holding),
+        "drop" => return controls::FileArray::drop(cur_holding),
+        "open" => return controls::Open::open(ext.to_string(), name.to_string(), editors),
+        "add" => return controls::Open::add_editor(name.to_string(), ext.to_string(), editors),
+        "cd" => return controls::Environment::change_dir(name.to_string()),
+        "list" => return controls::Search::list_dir(name.to_string()),
         &_ => todo!()
     };
-
-    return Ok(());
 }
 
