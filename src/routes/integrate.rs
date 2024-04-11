@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::fmt::Display;
 use std::fs;
 
-use crate::controls;
+use crate::controllers::controls;
 
 pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], editors: &mut HashMap<String, String>, cur_command: &mut String) -> Result<String, String> {
     let path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");

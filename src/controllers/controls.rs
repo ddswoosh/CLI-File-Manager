@@ -8,7 +8,7 @@ use std::fmt::Display;
 use std::process::Command;
 use std::string::String;
 
-use crate::integrate;
+use crate::routes::integrate;
 
 enum Action {
 
@@ -25,34 +25,17 @@ enum Action {
 
 pub struct Environment;
 
-pub struct FileArray<PathBuf> {
-    cur_holding: PathBuf,
-    name: PathBuf,  
-}
+pub struct FileArray;
 
-pub struct Mov<T> {
-    init_path: T,
-    end_path: T,
-}
+pub struct Mov;
 
-pub struct Fil<String> {
-    file_name: String,
-    file_type: String,
-}
+pub struct Fil;
 
+pub struct Dir;
 
-pub struct Dir<String> {
-    directory_name: String,
-}
+pub struct Open; 
 
-pub struct Open<T> {
-    editor_name: T,
-    file_name: T,
-}
-pub struct Search<String> {
-    root: String,
-    key: Option<String>,
-}
+pub struct Search;
 
 pub fn file_ext() -> HashMap<String, String> {
     let mut file_map: HashMap<String, String> = HashMap::new();
@@ -77,7 +60,7 @@ pub fn file_ext_insert(full: String, ext: String, hashmap: &mut HashMap<String, 
     return hashmap;
 }
 
-impl FileArray<PathBuf> {
+impl FileArray {
     pub fn drop(cur_holding: &mut [Option<PathBuf>; 1]) -> Result<String, String> {
         cur_holding[0] = None;  
         
@@ -97,7 +80,7 @@ impl FileArray<PathBuf> {
     }
 }
 
-impl Mov<String> {
+impl Mov {
     pub fn mov(from: String, to: String) -> Result<String, String> {
         let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(from);
@@ -111,7 +94,7 @@ impl Mov<String> {
     }
 }
 
-impl Fil<String> {
+impl Fil {
     pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>) -> Result<String, String> {
 
         if hm.get(&file_ext).is_some() {
@@ -137,7 +120,7 @@ impl Fil<String> {
     }
 }
 
-impl Dir<String> {
+impl Dir {
     pub fn new_directory(dir_name: String, path: PathBuf) -> Result<String, String> {
         let success: Result<(), std::io::Error> = fs::create_dir(dir_name);
         
@@ -155,7 +138,6 @@ impl Dir<String> {
             Err(_) => return Err("The directory is not empty, please remove all contents or type 'oddir {directory name}' if you want to force
             delete all child content. Type cancel to exit this function".to_string()),
         }
-
     }
     pub fn override_delete(dir_name: String, path: PathBuf) -> Result<String, String> {
         let del: Result<(), std::io::Error> = fs::remove_dir_all(dir_name);
@@ -167,7 +149,7 @@ impl Dir<String> {
     }
 }
 
-impl Open<String> {
+impl Open {
     pub fn open(editor_name: String, file_name: String, editors: &mut HashMap<String, String>) -> Result<String, String> {
         let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(&file_name);
@@ -180,7 +162,6 @@ impl Open<String> {
                 Err(_) => return Err("Could not open editor".to_string())
             };     
         }
-
         return Err("Editor not found, if you want to add your own editor, type help and follow the add editor instructions".to_string());
     }
 
@@ -194,7 +175,7 @@ impl Open<String> {
     }
 }
 
-impl Search<String> {
+impl Search {
     pub fn list_dir(root: String) -> Result<String, String> {
         let mut children: Vec<PathBuf> = vec![];
 
@@ -210,6 +191,7 @@ impl Search<String> {
                 if path.is_dir() {
                     path.push("-> Directory");
                     children.push(path);
+
                 } else {
                     path.push("-> File");
                     children.push(path);
@@ -221,6 +203,7 @@ impl Search<String> {
 
         if children.len() == 0 {
             return Err("Directory has no children".to_string());
+
         } else {
             let res: &mut PathBuf = &mut Default::default();
             
@@ -261,7 +244,6 @@ impl Environment {
                     Err(_) => return Err("Error changing directory".to_string())
                 }
             }
-
             Err(_) => return Err("Change to directory does not exsist within the scope of your current directory".to_string())
         }
     }
@@ -273,7 +255,6 @@ pub fn dump(text: Result<String, String>) -> bool {
             fs::write("dump\\response.txt", text.unwrap());
             return true; 
         },
-
         Err(_) => return false
     }
 }

@@ -5,9 +5,13 @@ use std::time::Duration;
 use std::env;
 use std::thread;
 use std::fs;
+ 
+mod controllers;
+mod routes;
 
-mod integrate;
-mod controls;
+use crate::routes::integrate;
+use crate::controllers::controls;
+
 
 fn main() { 
     let mut editors: HashMap<String, String> = HashMap::new();
