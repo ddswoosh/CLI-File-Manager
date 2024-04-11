@@ -248,13 +248,3 @@ impl Environment {
         }
     }
 }
-
-pub fn dump(text: Result<String, String>) -> bool {
-    match text {
-        Ok(_) => {
-            fs::write("dump\\response.txt", text.unwrap());
-            return true; 
-        },
-        Err(_) => return false
-    }
-}

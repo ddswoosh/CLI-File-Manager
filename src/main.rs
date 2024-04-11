@@ -8,10 +8,11 @@ use std::fs;
  
 mod controllers;
 mod routes;
+mod middleware;
 
 use crate::routes::integrate;
 use crate::controllers::controls;
-
+use crate::middleware::response;
 
 fn main() { 
     let mut editors: HashMap<String, String> = HashMap::new();
@@ -34,7 +35,7 @@ fn main() {
 
             let control_res: Result<String, String> = integrate::read(&mut hm, &mut cur_holding, &mut editors, &mut cur_command);
 
-            let dump_res: bool = controls::dump(control_res);
+            let dump_res: bool = response::dump(control_res);
 
             if dump_res == false {
                 panic!("Fatal error writing to response file. File is either corrupted or missing.");
