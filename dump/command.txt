@@ -1,1 +1,1 @@
-dd test
+mov test.py

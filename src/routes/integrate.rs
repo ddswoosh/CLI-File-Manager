@@ -47,7 +47,7 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
         "add" => return controls::Open::add_editor(name.to_string(), ext.to_string(), editors),
         "cd" => return controls::Environment::change_dir(name.to_string()),
         "list" => return controls::Search::list_dir(name.to_string()),
-        &_ => todo!()
+        _ => return Ok("This is not a command".to_string())
     };
 }
 
