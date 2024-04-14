@@ -1,10 +1,11 @@
-use std::collections::HashMap;
-use std::fmt::Display;
-use std::path::PathBuf;
-use std::time::Duration;
 use std::thread;
 use std::env;
 use std::fs;
+use std::fmt::Display;
+use std::path::PathBuf;
+use std::time::Duration;
+use std::collections::HashMap;
+
 
 use crate::routes::integrate;
 use crate::controllers::controls;
@@ -37,9 +38,7 @@ pub async fn run() {
     loop {
 
         if cur_command != fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").unwrap() {
-
             let control_res: Result<String, String> = integrate::read(&mut hm, &mut cur_holding, &mut editors, &mut cur_command);
-
             let dump_res: bool = response::dump(control_res.unwrap());
 
             if dump_res == false {

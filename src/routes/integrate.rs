@@ -1,7 +1,8 @@
-use std::collections::HashMap;
+use std::fs;
 use std::path::PathBuf;
 use std::fmt::Display;
-use std::fs;
+use std::collections::HashMap;
+
 
 use crate::controllers::controls;
 
@@ -13,7 +14,6 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
     *cur_command = cin.clone();
 
     let vec: Vec<&str> = cin.split_whitespace().collect();
-
     
     let mut command: &str = "";
     let mut name: &str = "";
@@ -38,7 +38,6 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
             _ => return Ok("Command not accepted, please type -help to see the list of all commands.".to_string())
     }
     
-
     } else if vec.len() == 2 {
         command = &vec[0];
         name = &vec[1];
@@ -49,13 +48,7 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
             "odd" => return controls::Dir::override_delete(name.to_string(), path),
             "df" => return controls::Fil::delete_file(name.to_string(), path),
             "grab" => return controls::FileArray::grab(name.into(), cur_holding),
-            "cd" =>  {
-                // if name == "back" {
-
-                // }
-                return controls::Environment::change_dir(name.to_string())
-                }
-
+            "cd" => return controls::Environment::change_dir(name.to_string()),
             _ => return Ok("Command not accepted, please type -help to see the list of all commands.".to_string())
         }
 

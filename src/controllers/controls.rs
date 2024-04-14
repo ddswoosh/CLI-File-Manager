@@ -1,27 +1,14 @@
 use std::io;
 use std::fs;
 use std::env;
-use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 use std::fmt::Display;
 use std::process::Command;
 use std::string::String;
+use std::collections::HashMap;
 
 use crate::routes::integrate;
-
-enum Action {
-
-    Grab,
-    Drop,
-    Move,
-    Newfile,
-    Deletefile,
-    NewDirectory,
-    DeleteDirectory,
-    Open,
-    Search,
-}
 
 pub struct Environment;
 
@@ -185,7 +172,6 @@ impl Open {
 impl Search {
     pub fn list_dir() -> Result<String, String> {
         let mut children: Vec<PathBuf> = vec![];
-
         let mut cur: PathBuf = Environment::working_dir().unwrap();
         
         if cur.is_dir() {
@@ -251,8 +237,7 @@ impl Environment {
             for i in (0..temp_vec.len()-1).rev() {
                 if temp_vec[i] == "\\" {
                     *&mut end_num = i;
-                    break;
-                    
+                    break;          
                 }
             }
             
