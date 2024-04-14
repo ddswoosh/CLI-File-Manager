@@ -50,13 +50,19 @@ impl FileArray {
 
     pub fn grab(name: PathBuf, cur_holding: &mut [Option<PathBuf>; 1]) -> Result<String, String>{
         let mut cur_path: PathBuf = Environment::working_dir().unwrap();
-        cur_path.push(name);
+        let found: Result<String, String> = Search::find_file(&name.display().to_string());
 
-        cur_holding[0] = Some(cur_path);
+        match found {
+            Ok(_) => {
+                cur_path.push(name);
+                cur_holding[0] = Some(cur_path);
 
-        match cur_holding[0] {
-            Some(_) => return Ok("Success".to_string()),
-            None => return Err("Could not grab.".to_string())
+                match cur_holding[0] {
+                    Some(_) => return Ok("Success".to_string()),
+                    None => return Ok("File may not exist".to_string())
+                };   
+        },
+            Err(_) => return Ok("File may not exist".to_string())
         }
     }
 
@@ -94,7 +100,7 @@ impl Fil {
             return Ok("Success".to_string());
 
         } else {
-            return Err("Your chosen file type does not yet exist. To create this extension, please type 
+            return Ok("Your chosen file type does not yet exist. To create this extension, please type 
             'add, full extension name, extension' (i.e. add python .py).".to_string());
         } 
     } 
@@ -110,47 +116,92 @@ impl Fil {
 }
 
 impl Dir {
-    pub fn new_directory(dir_name: String, path: PathBuf) -> Result<String, String> {
+    pub fn new_directory(dir_name: String, mut path: PathBuf) -> Result<String, String> {
+        for i in dir_name.chars() {
+            if i == '.' {
+                return Ok("Cannot use {.} in directories, this is only available for file extentions".to_string());
+            }
+        }
+
         let success: Result<(), std::io::Error> = fs::create_dir(dir_name);
         
         match success {
             Ok(()) => return Ok("Success".to_string()),
-            Err(_) => return Err("Path already exists".to_string())
+            Err(_) => return Ok("Path already exists".to_string())
         }
     } 
 
-    pub fn delete_directory(dir_name: String, path: PathBuf) -> Result<String, String> {
-        let del: Result<(), std::io::Error> = fs::remove_dir(dir_name);
+    pub fn delete_directory(dir_name: String, mut path: PathBuf) -> Result<String, String> {
+        let is_path: Result<String, String> = Search::find_file(&dir_name);
 
-        match del {
-            Ok(()) => return Ok("Success".to_string()),
-            Err(_) => return Ok("The directory is not empty, please remove all contents or type 'oddir {directory name}' if you want to force delete all child content".to_string()),
+        match is_path {
+            Ok(_) => {
+                path.push(&dir_name);
+        
+                match path.is_dir() {
+                    true => {
+                        let del: Result<(), std::io::Error> = fs::remove_dir(dir_name);
+                
+                        match del {
+                            Ok(()) => return Ok("Success".to_string()),
+                            Err(_) => return Ok("The directory is not empty, please remove all contents or type 'oddir {directory name}' if you want to force delete all child content".to_string()),
+                        }
+                    },
+
+                    false => return Ok("Directory not found".to_string())
+                }
+            },
+            Err(_) => Ok("Directory not found".to_string())
         }
     }
-    pub fn override_delete(dir_name: String, path: PathBuf) -> Result<String, String> {
-        let del: Result<(), std::io::Error> = fs::remove_dir_all(dir_name);
+
+    pub fn override_delete(dir_name: String, mut path: PathBuf) -> Result<String, String> {
+        let is_path: Result<String, String> = Search::find_file(&dir_name);
+
+        match is_path {
+            Ok(_) => {
+                path.push(&dir_name);
         
-        match del {
-            Ok(()) => return Ok("Success".to_string()),
-            Err(_) => return Err("Non-fatal error".to_string()),
+                match path.is_dir() {
+                    true => {
+                        let del: Result<(), std::io::Error> = fs::remove_dir_all(dir_name);
+                
+                        match del {
+                            Ok(()) => return Ok("Success".to_string()),
+                            Err(_) => return Ok("Fatal error".to_string()),
+                        }
+                    },
+
+                    false => return Ok("Directory not found".to_string())
+                }
+            },
+            Err(_) => Ok("Directory not found".to_string())
         }
     }
 }
 
 impl Open {
-    pub fn open(editor_name: String, file_name: String, editors: &mut HashMap<String, String>) -> Result<String, String> {
-        let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
-        cur_path.push(&file_name);
+    pub fn open(file_name: String, editor_name: String, editors: &mut HashMap<String, String>) -> Result<String, String> {
+        let is_file: Result<String, String> = Search::find_file(&file_name);
 
-        if editors.get(&editor_name).is_some() {
-            let status = Command::new(editors.get(&editor_name).unwrap()).arg(cur_path).status();
-
-            match status {
-                Ok(status) => return Ok("Success".to_string()),
-                Err(_) => return Err("Could not open editor".to_string())
-            };     
-        }
-        return Err("Editor not found, if you want to add your own editor, type help and follow the add editor instructions".to_string());
+        match is_file {
+            Ok(_) => {
+                let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
+                cur_path.push(&file_name);
+    
+                if editors.get(&editor_name).is_some() {
+                    let status = Command::new(editors.get(&editor_name).unwrap()).arg(cur_path).status();
+    
+                    match status {
+                        Ok(status) => return Ok("Success".to_string()),
+                        Err(_) => return Err("Could not open editor".to_string())
+                    };     
+                } else {
+                    return Ok("Editor not found, if you want to add your own editor, type help and follow the add editor instructions".to_string())
+                }   
+            }
+            Err(_) => return Ok("This file does not exist".to_string())
+        }     
     }
 
     pub fn add_editor(editor_name: String, path: String, editors: &mut HashMap<String, String>) -> Result<String, String> {

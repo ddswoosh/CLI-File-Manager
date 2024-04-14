@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use crate::controllers::controls;
 
 pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], editors: &mut HashMap<String, String>, cur_command: &mut String) -> Result<String, String> {
-    let path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
+    let mut path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
 
     let cin: String = fs::read_to_string("dump/command.txt").map_err(|e| e.to_string())?;
     
