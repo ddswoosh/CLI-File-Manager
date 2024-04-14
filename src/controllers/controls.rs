@@ -11,17 +11,11 @@ use std::collections::HashMap;
 use crate::routes::integrate;
 
 pub struct Environment;
-
 pub struct FileArray;
-
 pub struct Mov;
-
 pub struct Fil;
-
 pub struct Dir;
-
 pub struct Open; 
-
 pub struct Search;
 
 pub fn file_ext() -> HashMap<String, String> {
