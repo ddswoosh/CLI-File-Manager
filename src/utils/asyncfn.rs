@@ -26,6 +26,7 @@ pub async fn run() {
     let mut hm: HashMap<String, String> = controls::file_ext();
 
     let mut cur_command: String = String::new();
+    fs::write("C:\\Users\\ddswoosh\\rust\\dump\\command.txt", "");
 
     tokio::spawn(async {
         open_cli().await;
@@ -39,10 +40,10 @@ pub async fn run() {
 
             let control_res: Result<String, String> = integrate::read(&mut hm, &mut cur_holding, &mut editors, &mut cur_command);
 
-            let dump_res: bool = response::dump(control_res);
+            let dump_res: bool = response::dump(control_res.unwrap());
 
             if dump_res == false {
-                panic!("Fatal error writing to response file. File is either corrupted or missing.");
+                response::dump("Error writing to resposne to file, please restart the program".to_string());
             }
         }
         thread::sleep(Duration::from_secs(1));

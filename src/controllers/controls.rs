@@ -73,10 +73,18 @@ impl FileArray {
 
         cur_holding[0] = Some(cur_path);
 
-        match cur_path {
-            _ => return Ok("Success".to_string()),
-            _ => return Err("Could not grab.".to_string())
+        match cur_holding[0] {
+            Some(_) => return Ok("Success".to_string()),
+            None => return Err("Could not grab.".to_string())
         }
+    }
+
+    pub fn show(cur_holding: &[Option<PathBuf>; 1]) -> Result<String, String> {
+        if cur_holding[0] != None {
+            return Ok(cur_holding[0].as_ref().unwrap().display().to_string());
+        }
+
+        return Ok("None".to_string());
     }
 }
 
@@ -135,8 +143,7 @@ impl Dir {
 
         match del {
             Ok(()) => return Ok("Success".to_string()),
-            Err(_) => return Err("The directory is not empty, please remove all contents or type 'oddir {directory name}' if you want to force
-            delete all child content. Type cancel to exit this function".to_string()),
+            Err(_) => return Ok("The directory is not empty, please remove all contents or type 'oddir {directory name}' if you want to force delete all child content".to_string()),
         }
     }
     pub fn override_delete(dir_name: String, path: PathBuf) -> Result<String, String> {
@@ -176,12 +183,10 @@ impl Open {
 }
 
 impl Search {
-    pub fn list_dir(root: String) -> Result<String, String> {
+    pub fn list_dir() -> Result<String, String> {
         let mut children: Vec<PathBuf> = vec![];
 
         let mut cur: PathBuf = Environment::working_dir().unwrap();
-
-        cur.push(root);
         
         if cur.is_dir() {
             for child in fs::read_dir(cur).unwrap() {
@@ -189,11 +194,11 @@ impl Search {
                 let mut path: PathBuf = child.path();
     
                 if path.is_dir() {
-                    path.push("-> Directory");
+                    path.push(" -> Directory");
                     children.push(path);
 
                 } else {
-                    path.push("-> File");
+                    path.push(" -> File");
                     children.push(path);
                 }
             }
@@ -210,6 +215,7 @@ impl Search {
             for i in 0..children.len() {
                 res.push(&children[i]);
             }
+
             return Ok(res.display().to_string());
         }
     }
@@ -230,21 +236,53 @@ impl Environment {
     }
 
     pub fn change_dir(change: String) -> Result<String, String> {
-        let exists: Result<String, String> = Search::find_file(&change);
+        let mut cur: PathBuf = Self::working_dir().unwrap();
 
-        match exists {
-            Ok(_) => {
-                let mut cur: PathBuf = Self::working_dir().unwrap();
-                cur.push(change);
+        if change == "back".to_string() {
+            
+            let mut temp_vec: Vec<String> = vec![];
+            let mut new_path: String = String::new();
+            let mut end_num: usize = 0;
 
-                let success: Result<(), std::io::Error> = env::set_current_dir(cur);
+            for i in cur.display().to_string().chars() {
+                temp_vec.push(i.to_string());
+            }
 
-                match success {
-                    Ok(()) => return Ok("Success".to_string()),
-                    Err(_) => return Err("Error changing directory".to_string())
+            for i in (0..temp_vec.len()-1).rev() {
+                if temp_vec[i] == "\\" {
+                    *&mut end_num = i;
+                    break;
+                    
                 }
             }
-            Err(_) => return Err("Change to directory does not exsist within the scope of your current directory".to_string())
+            
+            for i in 0..end_num {
+                new_path += &temp_vec[i];
+            }
+
+            let success: Result<(), std::io::Error> = env::set_current_dir(new_path);
+
+                    match success {
+                        Ok(()) => return Ok("Success".to_string()),
+                        Err(_) => return Err("Error changing directory".to_string())
+                    };
+
+        } else {
+            let exists: Result<String, String> = Search::find_file(&change);
+
+            match exists {
+                Ok(_) => {
+                    cur.push(change);
+
+                    let success: Result<(), std::io::Error> = env::set_current_dir(cur);
+
+                    match success {
+                        Ok(()) => return Ok("Success".to_string()),
+                        Err(_) => return Err("Error changing directory".to_string())
+                    }
+                }
+                Err(_) => return Err("Change to directory does not exsist within the scope of your current directory".to_string())
+            }
         }
     }
 }
