@@ -15,16 +15,23 @@ class Cli
         {
             Console.WriteLine("\n");
             Console.ForegroundColor = ConsoleColor.White;
+
             string cw = ("Enter a command: ");
+
             Console.WriteLine(cw);
             Console.ForegroundColor = ConsoleColor.Green;
+
             int promptLength = cw.Length;
+
             Console.SetCursorPosition(promptLength, Console.CursorTop - 1);
 
             string userInput = Console.ReadLine();
 
             WriteCommandToFile(userInput, commandFilePath);
+            Thread.Sleep(1000);
+
             string response = ReadResponseFromFile(responseFilePath);
+
             Console.WriteLine(response);
         }
     }
