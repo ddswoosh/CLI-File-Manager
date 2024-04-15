@@ -18,6 +18,24 @@ pub struct Dir;
 pub struct Open; 
 pub struct Search;
 
+pub fn help() -> String {
+    return 
+"    
+nd (create directory) -> nd test
+dd (delete empty directory) -> dd test 
+nd (delete non-empty directory) -> odd test 
+nf (create file) -> nd test python 
+df (delete file) -> df test.py 
+open (open file in an editor) -> open code test.py 
+grab (store file/directory in an array) -> grab test.py 
+show (display file in the grab array) -> show 
+drop (drop file/directory from array) -> drop 
+mov (move file/directory) -> mov test.py{or type current to use grabbed file} new/test.py 
+cd (change directory) -> cd new 
+list (display all items in current directory) -> show
+".to_string()
+}
+
 pub fn file_ext() -> HashMap<String, String> {
     let mut file_map: HashMap<String, String> = HashMap::new();
 
@@ -269,8 +287,7 @@ impl Environment {
     pub fn change_dir(change: String) -> Result<String, String> {
         let mut cur: PathBuf = Self::working_dir().unwrap();
 
-        if change == "back".to_string() {
-            
+        if change == "back".to_string() { 
             let mut temp_vec: Vec<String> = vec![];
             let mut new_path: String = String::new();
             let mut end_num: usize = 0;

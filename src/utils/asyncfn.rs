@@ -21,12 +21,13 @@ async fn open_cli() {
 
 pub async fn run() {
     let mut editors: HashMap<String, String> = HashMap::new();
+    
     editors.insert("code".to_string(), "C:\\Users\\ddswoosh\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe".to_string());
 
     let mut cur_holding: [Option<PathBuf>; 1] = [None];
     let mut hm: HashMap<String, String> = controls::file_ext();
-
     let mut cur_command: String = String::new();
+
     fs::write("C:\\Users\\ddswoosh\\rust\\dump\\command.txt", "");
 
     tokio::spawn(async {
@@ -38,8 +39,8 @@ pub async fn run() {
     loop {
 
         if cur_command != fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").unwrap() {
-            let control_res: Result<String, String> = integrate::read(&mut hm, &mut cur_holding, &mut editors, &mut cur_command);
-            let dump_res: bool = response::dump(control_res.unwrap());
+            let control_res: String = integrate::read(&mut hm, &mut cur_holding, &mut editors, &mut cur_command);
+            let dump_res: bool = response::dump(control_res);
 
             if dump_res == false {
                 response::dump("Error writing to resposne to file, please restart the program".to_string());
