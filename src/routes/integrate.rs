@@ -33,7 +33,6 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
                 "nf" => return controls::Fil::new_file(name.to_string(), ext.to_string(), hashmap).unwrap(),
                 "open" => return controls::Open::open(ext.to_string(), name.to_string(), editors).unwrap(),
                 "add" => return controls::Open::add_editor(name.to_string(), ext.to_string(), editors).unwrap(),
-                "open" => return controls::Open::open(ext.to_string(), name.to_string(), editors).unwrap(),
                 "mov" => {
                     if name == "holding".to_string(){
                         return controls::Mov::mov(cur_holding[0].clone().unwrap().display().to_string(), ext.to_string()).unwrap()
@@ -60,9 +59,9 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
         } else if vec.len() == 1 {
             command = &vec[0];
 
-            // if command == "wd" {
-            //     return controls::Environment::working_dir().display().to_string();
-            // }
+            if command == "wd" {
+                return controls::Environment::working_dir().expect("Fatal error").display().to_string();
+            }
 
             match command {
                 "drop" => return controls::FileArray::drop(cur_holding).unwrap(),
