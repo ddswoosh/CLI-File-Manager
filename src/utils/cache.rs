@@ -13,7 +13,7 @@ enum Action {
 }
 
 #[derive(Debug, Clone)]
-struct Node {
+pub struct Node {
     op: Action,
     param1: Option<String>,
     param2: Option<String>, 
@@ -36,7 +36,6 @@ impl Node {
             prev: None,
         }
     }
-
 }
 
 impl List {
@@ -47,7 +46,7 @@ impl List {
         }
     }
 
-    fn add(&mut self, mut node: Box<Node>) {
+    pub fn add(&mut self, mut node: Box<Node>) {
         if self.count > 0 {
             self.tail.next = Some(node.clone());
             node.prev = Some(self.tail.clone());
@@ -64,6 +63,7 @@ impl List {
         } 
     }
 }
+
 pub fn run() {
     let mut dummy: Node = Node::new(Action::dummy, None, None);
     let mut list: List = List::init(Box::new(dummy));
