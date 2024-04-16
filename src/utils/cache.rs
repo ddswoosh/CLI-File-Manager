@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Action {
     dummy,
     cd,
@@ -12,7 +12,7 @@ enum Action {
     drop,  
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Node {
     op: Action,
     param1: Option<String>,
@@ -21,14 +21,13 @@ struct Node {
     prev: Option<Box<Node>>,
 }
 
-struct List {
+pub struct List {
     tail: Box<Node>,
     count: usize,  
 }
 
-
 impl Node {
-    fn new(op: Action, param1: Option<String>, param2: Option<String>) -> Self {
+    pub fn new(op: Action, param1: Option<String>, param2: Option<String>) -> Self {
         Node {
             op: op,
             param1: param1,
@@ -38,37 +37,42 @@ impl Node {
         }
     }
 
-    fn clone(node: Node) -> Self {
-        return Self::new(node.op, node.param1, node.param2)
-    }
 }
 
 impl List {
     fn init(start: Box<Node>) -> Self {
         List {
             tail: start,
-            count: 0
+            count: 1
         }
     }
 
     fn add(&mut self, mut node: Box<Node>) {
-        node.prev = Some(self.tail);
-        self.tail.next = Some(node);
-        self.tail = node;
-        
-        
+        if self.count > 0 {
+            self.tail.next = Some(node.clone());
+            node.prev = Some(self.tail.clone());
+            self.tail = node;
+            self.count += 1;
+       }
     }
 
-
+    fn show(&mut self) {
+        while self.count > 1 {
+            println!("{:?}", self.tail.op);
+            self.count -= 1;
+            self.tail = self.tail.prev.clone().unwrap();
+        } 
+    }
 }
-
 pub fn run() {
     let mut dummy: Node = Node::new(Action::dummy, None, None);
-    let mut test1: Node = Node::new(Action::mov, Some("try".to_string()), None);
+    let mut list: List = List::init(Box::new(dummy));
 
-    let mut start: List = List::init(Box::new(dummy));
-    start.add(Box::new(test1));
+    let mut one: Node = Node::new(Action::mov, None, None);
 
-    // println!("{:?}", start.tail)
+    List::add(&mut list, Box::new(one));
+    
+
+    List::show(&mut list);
 
 }
