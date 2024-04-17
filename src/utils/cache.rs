@@ -1,5 +1,5 @@
 #[derive(Debug, Clone)]
-enum Action {
+pub enum Action {
     dummy,
     cd,
     nf,
@@ -55,24 +55,20 @@ impl List {
        }
     }
 
-    fn show(&mut self) {
+    pub fn show(&mut self) {
         while self.count > 1 {
-            println!("{:?}", self.tail.op);
+            println!("{:?} {:?} {:?}", self.tail.op, self.tail.param1, self.tail.param2);
             self.count -= 1;
             self.tail = self.tail.prev.clone().unwrap();
         } 
     }
 }
-
-pub fn run() {
+pub fn new_tail(node: Box<Node>) {
+    
+}
+pub fn run() -> List {
     let mut dummy: Node = Node::new(Action::dummy, None, None);
     let mut list: List = List::init(Box::new(dummy));
 
-    let mut one: Node = Node::new(Action::mov, None, None);
-
-    List::add(&mut list, Box::new(one));
-    
-
-    List::show(&mut list);
-
+    return list;
 }

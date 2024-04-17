@@ -8,6 +8,7 @@ use std::process::Command;
 use std::string::String;
 use std::collections::HashMap;
 
+use crate::utils::cache;
 use crate::routes::integrate;
 
 pub struct Environment;
@@ -76,9 +77,11 @@ impl FileArray {
                 cur_holding[0] = Some(cur_path);
 
                 match cur_holding[0] {
-                    Some(_) => return Ok("Success".to_string()),
+                    Some(_) => {
+                        return Ok("Success".to_string())
+                    },
                     None => return Ok("File may not exist".to_string())
-                };   
+                } 
         },
             Err(_) => return Ok("File may not exist".to_string())
         }
@@ -94,21 +97,26 @@ impl FileArray {
 }
 
 impl Mov {
-    pub fn mov(from: String, to: String) -> Result<String, String> {
+    pub fn mov(from: String, to: String, list: &mut cache::List) -> Result<String, String> {
         let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
-        cur_path.push(from);
+        cur_path.push(from.clone());
         
-        let attempt: Result<(), std::io::Error> = fs::rename(cur_path, to);
+        let attempt: Result<(), std::io::Error> = fs::rename(cur_path, to.clone());
 
         match attempt {
-            Ok(()) => Ok("Success".to_string()),
-            Err(_) =>Err("Destination is not valid, please try again.".to_string())
+            Ok(()) => {
+                let mut node: cache::Node = cache::Node::new(cache::Action::mov, Some(from), Some(to));
+                cache::List::add(list, Box::new(node));
+
+                return Ok("Success".to_string())
+            },
+            Err(_) => return Ok("Destination is not valid, please try again.".to_string())
         }
     }
 }
 
 impl Fil {
-    pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>) -> Result<String, String> {
+    pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>, list: &mut cache::List) -> Result<String, String> {
 
         if hm.get(&file_ext).is_some() {
             let ext: &String = hm.get(&file_ext).unwrap();
@@ -123,7 +131,7 @@ impl Fil {
         } 
     } 
 
-    pub fn delete_file(file_name: String, path: PathBuf) -> Result<String, String> {
+    pub fn delete_file(file_name: String, path: PathBuf, list: &mut cache::List) -> Result<String, String> {
         let success = fs::remove_file(file_name);
         
         match success {
@@ -134,7 +142,7 @@ impl Fil {
 }
 
 impl Dir {
-    pub fn new_directory(dir_name: String, mut path: PathBuf) -> Result<String, String> {
+    pub fn new_directory(dir_name: String, mut path: PathBuf, list: &mut cache::List) -> Result<String, String> {
         for i in dir_name.chars() {
             if i == '.' {
                 return Ok("Cannot use {.} in directories, this is only available for file extentions".to_string());
@@ -149,7 +157,7 @@ impl Dir {
         }
     } 
 
-    pub fn delete_directory(dir_name: String, mut path: PathBuf) -> Result<String, String> {
+    pub fn delete_directory(dir_name: String, mut path: PathBuf, list: &mut cache::List) -> Result<String, String> {
         let is_path: Result<String, String> = Search::find_file(&dir_name);
 
         match is_path {
@@ -173,7 +181,7 @@ impl Dir {
         }
     }
 
-    pub fn override_delete(dir_name: String, mut path: PathBuf) -> Result<String, String> {
+    pub fn override_delete(dir_name: String, mut path: PathBuf, list: &mut cache::List) -> Result<String, String> {
         let is_path: Result<String, String> = Search::find_file(&dir_name);
 
         match is_path {
@@ -284,7 +292,7 @@ impl Environment {
         return Ok(cur?);  
     }
 
-    pub fn change_dir(change: String) -> Result<String, String> {
+    pub fn change_dir(change: String, list: &mut cache::List) -> Result<String, String> {
         let mut cur: PathBuf = Self::working_dir().unwrap();
 
         if change == "back".to_string() { 

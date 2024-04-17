@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 use std::collections::HashMap;
 
-
+use crate::utils::cache;
 use crate::routes::integrate;
 use crate::controllers::controls;
 use crate::middleware::response;
@@ -34,12 +34,15 @@ pub async fn run() {
         open_cli().await;
     });
 
+    let mut list: cache::List = cache::run();
+
     thread::sleep(Duration::from_secs(3));
 
     loop {
+        cache::List::show(&mut list);
 
         if cur_command != fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").unwrap() {
-            let control_res: String = integrate::read(&mut hm, &mut cur_holding, &mut editors, &mut cur_command);
+            let control_res: String = integrate::read(&mut hm, &mut cur_holding, &mut editors, &mut cur_command, &mut list);
             let dump_res: bool = response::dump(control_res);
 
             if dump_res == false {
