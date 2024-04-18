@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use crate::utils::cache;
 use crate::controllers::controls;
 
-pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], 
+pub fn read(extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], 
     editors: &mut HashMap<String, String>, cur_command: &mut String, list: &mut cache::List) -> String {
 
     let mut path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
@@ -32,9 +32,13 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
             ext = &vec[2];
 
             match command {
-                "nf" => return controls::Fil::new_file(name.to_string(), ext.to_string(), hashmap, list).unwrap(),
+                "nf" => return controls::Fil::new_file(name.to_string(), ext.to_string(), extensions, list).unwrap(),
                 "open" => return controls::Open::open(ext.to_string(), name.to_string(), editors).unwrap(),
-                "add" => return controls::Open::add_editor(name.to_string(), ext.to_string(), editors).unwrap(),
+                "added" => return controls::Open::add_editor(name.to_string(), ext.to_string(), editors).unwrap(),
+                "addext" =>{
+                    controls::file_ext_insert(name.to_string(), ext.to_string(), extensions);
+                    return "success".to_string();
+                },
                 "mov" => {
                     if name == "holding".to_string(){
                         return controls::Mov::mov(cur_holding[0].clone().unwrap().display().to_string(), ext.to_string(), list).unwrap()
@@ -66,6 +70,7 @@ pub fn read(hashmap: &mut HashMap<String, String>, cur_holding: &mut [Option<Pat
             }
 
             match command {
+                // "cache" => return cache::List::display_cache(list),
                 "drop" => return controls::FileArray::drop(cur_holding).unwrap(),
                 "show" => return controls::FileArray::show(cur_holding).unwrap(),
                 "list" => return controls::Search::list_dir().unwrap(),

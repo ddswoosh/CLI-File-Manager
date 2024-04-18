@@ -32,8 +32,10 @@ grab (store file/directory in an array) -> grab test.py
 show (display file in the grab array) -> show 
 drop (drop file/directory from array) -> drop 
 mov (move file/directory) -> mov test.py{or type current to use grabbed file} new/test.py 
-cd (change directory) -> cd new 
-list (display all items in current directory) -> show
+cd (change directory) -> cd directory
+list (display all items in current directory) -> list
+addext (display all items in current directory) -> add vim ../vim.exe
+added (display all items in current directory) -> add javascript .js
 ".to_string()
 }
 
@@ -42,7 +44,6 @@ pub fn file_ext() -> HashMap<String, String> {
 
     file_map.insert("python".to_string(), ".py".to_string());
     file_map.insert("java".to_string(), ".java".to_string());
-    file_map.insert("javascript".to_string(), ".js".to_string());
     file_map.insert("c++".to_string(), ".cpp".to_string());
     file_map.insert("c".to_string(), ".c".to_string());
     file_map.insert("rust".to_string(), ".rs".to_string());
@@ -54,10 +55,10 @@ pub fn file_ext() -> HashMap<String, String> {
     return file_map;
 }
 
-pub fn file_ext_insert(full: String, ext: String, hashmap: &mut HashMap<String, String>) -> &mut HashMap<String, String> {
-    hashmap.insert(full, ext);
+pub fn file_ext_insert(full: String, ext: String, extentions: &mut HashMap<String, String>) -> &mut HashMap<String, String> {
+    extentions.insert(full, ext);
 
-    return hashmap;
+    return extentions;
 }
 
 impl FileArray {
@@ -105,10 +106,10 @@ impl Mov {
 
         match attempt {
             Ok(()) => {
-                let mut node: cache::Node = cache::Node::new(cache::Action::mov, Some(from), Some(to));
+                let mut node: cache::Node = cache::Node::new(cache::Action::move_file, Some(from), Some(to));
                 cache::List::add(list, Box::new(node));
 
-                return Ok("Success".to_string())
+                return Ok("Success".to_string());
             },
             Err(_) => return Ok("Destination is not valid, please try again.".to_string())
         }
@@ -122,21 +123,30 @@ impl Fil {
             let ext: &String = hm.get(&file_ext).unwrap();
             let name: String = file_name + &ext;
 
-            fs::File::create(name);
+            fs::File::create(name.clone());
+
+            let mut node: cache::Node = cache::Node::new(cache::Action::new_file, Some(name), None);
+            cache::List::add(list, Box::new(node));
+
             return Ok("Success".to_string());
 
         } else {
             return Ok("Your chosen file type does not yet exist. To create this extension, please type 
-            'add, full extension name, extension' (i.e. add python .py).".to_string());
+            'addext, full extension name, extension' (i.e. addext python .py).".to_string());
         } 
     } 
 
-    pub fn delete_file(file_name: String, path: PathBuf, list: &mut cache::List) -> Result<String, String> {
-        let success = fs::remove_file(file_name);
+    pub fn delete_file(name: String, path: PathBuf, list: &mut cache::List) -> Result<String, String> {
+        let success = fs::remove_file(name.clone());
         
         match success {
-            Ok(()) => return Ok("Success".to_string()),
-            Err(_) => Err("Check the file exists or the your spelling is correct.".to_string())
+            Ok(()) => {
+                let mut node: cache::Node = cache::Node::new(cache::Action::delete_file, Some(name), None);
+                cache::List::add(list, Box::new(node));
+
+                return Ok("Success".to_string());
+            },
+            Err(_) => return Ok("Check the file exists or the your spelling is correct.".to_string())
         }
     }
 }
@@ -149,10 +159,15 @@ impl Dir {
             }
         }
 
-        let success: Result<(), std::io::Error> = fs::create_dir(dir_name);
+        let success: Result<(), std::io::Error> = fs::create_dir(dir_name.clone());
         
         match success {
-            Ok(()) => return Ok("Success".to_string()),
+            Ok(()) => {
+                let mut node: cache::Node = cache::Node::new(cache::Action::new_directory, Some(dir_name), None);
+                cache::List::add(list, Box::new(node));
+
+                return Ok("Success".to_string());
+            },
             Err(_) => return Ok("Path already exists".to_string())
         }
     } 
@@ -166,10 +181,15 @@ impl Dir {
         
                 match path.is_dir() {
                     true => {
-                        let del: Result<(), std::io::Error> = fs::remove_dir(dir_name);
+                        let del: Result<(), std::io::Error> = fs::remove_dir(dir_name.clone());
                 
                         match del {
-                            Ok(()) => return Ok("Success".to_string()),
+                            Ok(()) => {
+                                let mut node: cache::Node = cache::Node::new(cache::Action::delete_directory, Some(dir_name), None);
+                                cache::List::add(list, Box::new(node));
+
+                                return Ok("Success".to_string());
+                            },
                             Err(_) => return Ok("The directory is not empty, please remove all contents or type 'oddir {directory name}' if you want to force delete all child content".to_string()),
                         }
                     },
@@ -190,10 +210,15 @@ impl Dir {
         
                 match path.is_dir() {
                     true => {
-                        let del: Result<(), std::io::Error> = fs::remove_dir_all(dir_name);
+                        let del: Result<(), std::io::Error> = fs::remove_dir_all(dir_name.clone());
                 
                         match del {
-                            Ok(()) => return Ok("Success".to_string()),
+                            Ok(()) => {
+                                let mut node: cache::Node = cache::Node::new(cache::Action::override_delete_directory, Some(dir_name), None);
+                                cache::List::add(list, Box::new(node));
+
+                                return Ok("Success".to_string());
+                            },
                             Err(_) => return Ok("Fatal error".to_string()),
                         }
                     },
@@ -235,7 +260,7 @@ impl Open {
 
         match success { 
             Some(_) => return Ok("Success".to_string()),
-            None => return Err("Error adding editor to list".to_string())
+            None => return Ok("Error adding editor to list".to_string())
         }
     }
 }
@@ -315,10 +340,15 @@ impl Environment {
                 new_path += &temp_vec[i];
             }
 
-            let success: Result<(), std::io::Error> = env::set_current_dir(new_path);
+            let success: Result<(), std::io::Error> = env::set_current_dir(new_path.clone());
 
                     match success {
-                        Ok(()) => return Ok("Success".to_string()),
+                        Ok(()) => {
+                            let mut node: cache::Node = cache::Node::new(cache::Action::change_directory, Some(new_path), None);
+                            cache::List::add(list, Box::new(node));
+                          
+                            return Ok("Success".to_string());
+                        },
                         Err(_) => return Err("Error changing directory".to_string())
                     };
 

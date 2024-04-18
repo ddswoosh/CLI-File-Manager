@@ -1,15 +1,13 @@
 #[derive(Debug, Clone)]
 pub enum Action {
     dummy,
-    cd,
-    nf,
-    df,
-    nd,
-    dd,
-    odd,
-    mov,
-    grab,
-    drop,  
+    change_directory,
+    new_file,
+    delete_file,
+    new_directory,
+    delete_directory,
+    override_delete_directory,
+    move_file,
 }
 
 #[derive(Debug, Clone)]
@@ -55,17 +53,17 @@ impl List {
        }
     }
 
-    pub fn show(&mut self) {
+    pub fn display_cache(&mut self) {
+        let mut res: String = String::new();
+
         while self.count > 1 {
-            println!("{:?} {:?} {:?}", self.tail.op, self.tail.param1, self.tail.param2);
+        
             self.count -= 1;
             self.tail = self.tail.prev.clone().unwrap();
         } 
-    }
+    }    
 }
-pub fn new_tail(node: Box<Node>) {
-    
-}
+
 pub fn run() -> List {
     let mut dummy: Node = Node::new(Action::dummy, None, None);
     let mut list: List = List::init(Box::new(dummy));
