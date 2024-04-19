@@ -24,6 +24,22 @@ pub struct List {
     count: usize,  
 }
 
+impl ToString for Action {
+    fn to_string(&self) -> String {
+        match self {
+            Action::dummy => return "dummy".to_string(),
+            Action::move_file => return "move_file".to_string(),
+            Action::change_directory => return "change_directory".to_string(),
+            Action::new_file => return "new_file".to_string(),
+            Action::delete_file => return "delete_file".to_string(),
+            Action::new_directory => return "new_directory".to_string(),
+            Action::delete_directory => return "delete_directory".to_string(),
+            Action::override_delete_directory => return "override_delete_directory".to_string(),
+        }
+    }
+}
+
+
 impl Node {
     pub fn new(op: Action, param1: Option<String>, param2: Option<String>) -> Self {
         Node {
@@ -53,14 +69,34 @@ impl List {
        }
     }
 
-    pub fn display_cache(&mut self) {
+    pub fn display_cache(&mut self, num_node: &mut usize) -> String {
         let mut res: String = String::new();
+        *num_node = self.count - 1;
 
-        while self.count > 1 {
-        
+        while self.count >= *num_node && self.count > 1 {
+            if self.tail.param1.is_some() && self.tail.param2.is_some() {
+                res += &self.count.to_string();
+                res += " - {";
+                res += &self.tail.op.to_string();
+                res += "-->";
+                res += &self.tail.param1.clone().unwrap();
+                res += "-->";
+                res += &self.tail.param2.clone().unwrap();
+                res += "}   ";
+            } else {
+                res += &self.count.to_string();
+                res += " - {";
+                res += &self.tail.op.to_string();
+                res += "-->";
+                res += &self.tail.param1.clone().unwrap();
+                res += "}   ";
+            }
+
             self.count -= 1;
             self.tail = self.tail.prev.clone().unwrap();
         } 
+        
+        return res;
     }    
 }
 

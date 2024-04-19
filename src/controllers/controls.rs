@@ -34,8 +34,9 @@ drop (drop file/directory from array) -> drop
 mov (move file/directory) -> mov test.py{or type current to use grabbed file} new/test.py 
 cd (change directory) -> cd directory
 list (display all items in current directory) -> list
-addext (display all items in current directory) -> add vim ../vim.exe
-added (display all items in current directory) -> add javascript .js
+addext (display all items in current directory) -> add javascript .js
+added (display all items in current directory) -> add vim ../vim.exe
+cache (display 5 most recent actions to be reverted) -> cache
 ".to_string()
 }
 

@@ -7,7 +7,7 @@ use crate::utils::cache;
 use crate::controllers::controls;
 
 pub fn read(extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], 
-    editors: &mut HashMap<String, String>, cur_command: &mut String, list: &mut cache::List) -> String {
+    editors: &mut HashMap<String, String>, cur_command: &mut String, list: &mut cache::List, num_node: &mut usize) -> String {
 
     let mut path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
 
@@ -70,7 +70,7 @@ pub fn read(extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<
             }
 
             match command {
-                // "cache" => return cache::List::display_cache(list),
+                "cache" => return cache::List::display_cache(list, num_node),
                 "drop" => return controls::FileArray::drop(cur_holding).unwrap(),
                 "show" => return controls::FileArray::show(cur_holding).unwrap(),
                 "list" => return controls::Search::list_dir().unwrap(),
