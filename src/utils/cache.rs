@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum Action {
     dummy,
     change_directory,
@@ -10,7 +10,7 @@ pub enum Action {
     move_file,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Node {
     op: Action,
     param1: Option<String>,
@@ -38,7 +38,6 @@ impl ToString for Action {
         }
     }
 }
-
 
 impl Node {
     pub fn new(op: Action, param1: Option<String>, param2: Option<String>) -> Self {
