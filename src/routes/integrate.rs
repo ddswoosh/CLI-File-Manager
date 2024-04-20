@@ -2,6 +2,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::fmt::Display;
 use std::collections::HashMap;
+use std::str::FromStr;
 
 use crate::utils::cache;
 use crate::controllers::controls;
@@ -64,6 +65,16 @@ pub fn read(extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<
 
         } else if vec.len() == 1 {
             command = &vec[0];
+            let temp: usize = FromStr::from_str(command).unwrap();
+
+            if temp > *num_node {
+                let node = cache::List::get_node(list, temp);
+
+                match node {
+                    Some(_) => return "test".to_string(),
+                    None => return "The node you selected is not in the cache".to_string()
+                };
+            }
 
             if command == "wd" {
                 return controls::Environment::working_dir().expect("Fatal error").display().to_string();

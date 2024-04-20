@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum Action {
     dummy,
     change_directory,
@@ -10,7 +10,7 @@ pub enum Action {
     move_file,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Node {
     op: Action,
     param1: Option<String>,
@@ -97,6 +97,19 @@ impl List {
         
         return res;
     }    
+
+    pub fn get_node(&mut self, num: usize) -> Option<&Node> {
+        while self.count > num {
+            self.count -= 1;
+            if self.tail.prev.is_some() {
+                self.tail = self.tail.prev.clone().unwrap();
+            } else {
+                return None;
+            }
+        }
+
+        return Some(&self.tail);
+    }
 }
 
 pub fn run() -> List {

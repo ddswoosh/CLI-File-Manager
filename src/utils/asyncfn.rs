@@ -42,10 +42,14 @@ pub async fn run() {
 
         if cur_command != fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").unwrap() {
             let control_res: String = integrate::read(&mut extensions, &mut cur_holding, &mut editors, &mut cur_command, &mut list, &mut num_node);
-            let dump_res: bool = response::dump(control_res);
+            let dump_res: bool = response::dump(&control_res);
+
+            if control_res == "cache".to_string() {
+                let dump_res: bool = response::dump(&"Please type a node number seen above to commence reversion".to_string());
+            }
 
             if dump_res == false {
-                response::dump("Error writing to resposne to file, please restart the program".to_string());
+                response::dump(&"Error writing to resposne to file, please restart the program".to_string());
             }
         }
         thread::sleep(Duration::from_secs(1));
