@@ -9,5 +9,4 @@ use crate::utils::cache;
 #[tokio::main]
 async fn main() { 
     asyncfn::run().await;
-
 }

@@ -7,8 +7,11 @@ use std::str::FromStr;
 use crate::utils::cache;
 use crate::controllers::controls;
 
-pub fn read(extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], 
-    editors: &mut HashMap<String, String>, cur_command: &mut String, list: &mut cache::List, num_node: &mut usize) -> String {
+pub fn read(
+    extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], 
+    editors: &mut HashMap<String, String>, cur_command: &mut String, 
+    list: &mut cache::List, num_node: &mut u8
+) -> String {
 
     let mut path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
 
@@ -65,16 +68,6 @@ pub fn read(extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<
 
         } else if vec.len() == 1 {
             command = &vec[0];
-            let temp: usize = FromStr::from_str(command).unwrap();
-
-            if temp > *num_node {
-                let node = cache::List::get_node(list, temp);
-
-                match node {
-                    Some(_) => return "test".to_string(),
-                    None => return "The node you selected is not in the cache".to_string()
-                };
-            }
 
             if command == "wd" {
                 return controls::Environment::working_dir().expect("Fatal error").display().to_string();
@@ -85,8 +78,30 @@ pub fn read(extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<
                 "drop" => return controls::FileArray::drop(cur_holding).unwrap(),
                 "show" => return controls::FileArray::show(cur_holding).unwrap(),
                 "list" => return controls::Search::list_dir().unwrap(),
-                _ => "Command not accepted, please type -help to see the list of all commands.".to_string()
+                _ => {
+                    let temp: u8 = FromStr::from_str(command).unwrap();
+                    println!("{}", temp);
+                    if (temp as char).is_digit(36) == false {
+                        if temp > *num_node {
+                            let mut node: Option<&cache::Node> = cache::List::get_node(list, temp);
+
+                            match node {
+                                Some(_) => "test".to_string(),
+                                None => return "The node you selected is not in the cache".to_string()
+                            };
+                        }
+
+                        else {
+                            return "not num".to_string();
+                        };
+                    }
+                    else {
+                        return "not temo".to_string();
+                    }
+                }
             }
+
+            return "Command not accepted, please type -help to see the list of all commands.".to_string()
 
         } else {
             return "Command not accepted, please type -help to see the list of all commands.".to_string()

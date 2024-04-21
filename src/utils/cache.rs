@@ -21,7 +21,7 @@ pub struct Node {
 
 pub struct List {
     tail: Box<Node>,
-    count: usize,  
+    count: u8,  
 }
 
 impl ToString for Action {
@@ -68,7 +68,7 @@ impl List {
        }
     }
 
-    pub fn display_cache(&mut self, num_node: &mut usize) -> String {
+    pub fn display_cache(&mut self, num_node: &mut u8) -> String {
         let mut res: String = String::new();
         *num_node = self.count - 1;
 
@@ -76,7 +76,7 @@ impl List {
             if self.tail.param1.is_some() && self.tail.param2.is_some() {
                 res += &self.count.to_string();
                 res += " - {";
-                res += &self.tail.op.to_string();
+                res += &Action::to_string(&self.tail.op);
                 res += "-->";
                 res += &self.tail.param1.clone().unwrap();
                 res += "-->";
@@ -85,7 +85,7 @@ impl List {
             } else {
                 res += &self.count.to_string();
                 res += " - {";
-                res += &self.tail.op.to_string();
+                res += &Action::to_string(&self.tail.op);
                 res += "-->";
                 res += &self.tail.param1.clone().unwrap();
                 res += "}   ";
@@ -98,7 +98,7 @@ impl List {
         return res;
     }    
 
-    pub fn get_node(&mut self, num: usize) -> Option<&Node> {
+    pub fn get_node(&mut self, num: u8) -> Option<&Node> {
         while self.count > num {
             self.count -= 1;
             if self.tail.prev.is_some() {
