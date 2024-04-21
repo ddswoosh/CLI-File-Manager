@@ -80,13 +80,21 @@ pub fn read(
                 "list" => return controls::Search::list_dir().unwrap(),
                 _ => {
                     let temp: u8 = FromStr::from_str(command).unwrap();
-                    println!("{}", temp);
+                
                     if (temp as char).is_digit(36) == false {
                         if temp > *num_node {
-                            let mut node: Option<&cache::Node> = cache::List::get_node(list, temp);
-
-                            match node {
-                                Some(_) => "test".to_string(),
+                            let wrapped_node: Option<&cache::Node> = cache::List::get_node(list, temp);
+                            match wrapped_node {
+                                Some(_) => {
+                                    let unwrapped_node: &cache::Node = wrapped_node.unwrap();
+                                    
+                                    let mut res: String = String::new();
+                                    res += &cache::Action::to_string(&unwrapped_node.op);
+                                    // res += &unwrapped_node.param1.clone().unwrap();
+                                    // res += &unwrapped_node.param2.clone().unwrap();
+                                    
+                                    return res;
+                                }
                                 None => return "The node you selected is not in the cache".to_string()
                             };
                         }

@@ -12,9 +12,9 @@ pub enum Action {
 
 #[derive(Debug, Clone)]
 pub struct Node {
-    op: Action,
-    param1: Option<String>,
-    param2: Option<String>, 
+    pub op: Action,
+    pub param1: Option<String>,
+    pub param2: Option<String>, 
     next: Option<Box<Node>>,
     prev: Option<Box<Node>>,
 }
@@ -99,8 +99,10 @@ impl List {
     }    
 
     pub fn get_node(&mut self, num: u8) -> Option<&Node> {
-        while self.count > num {
-            self.count -= 1;
+        let mut temp: u8 = self.count.clone();
+
+        while temp != num && temp > 0 {
+            temp -= 1;
             if self.tail.prev.is_some() {
                 self.tail = self.tail.prev.clone().unwrap();
             } else {
