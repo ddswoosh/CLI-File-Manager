@@ -16,12 +16,13 @@ pub struct Node {
     pub param1: Option<String>,
     pub param2: Option<String>, 
     next: Option<Box<Node>>,
-    prev: Option<Box<Node>>,
+    pub prev: Option<Box<Node>>,
 }
 
+#[derive(Clone)]
 pub struct List {
-    tail: Box<Node>,
-    count: u8,  
+    pub tail: Box<Node>,
+    pub count: u8,  
 }
 
 impl ToString for Action {
@@ -68,40 +69,53 @@ impl List {
        }
     }
 
-    pub fn display_cache(&mut self, num_node: &mut u8) -> String {
+    pub fn display_cache(list: &mut List, num_node: &mut u8) -> String {
         let mut res: String = String::new();
-        *num_node = self.count - 1;
+        let mut temp_count: u8 = list.count.clone();
+        let mut cycle_min_node: u8 = 0;
 
-        while self.count >= *num_node && self.count > 1 {
-            if self.tail.param1.is_some() && self.tail.param2.is_some() {
-                res += &self.count.to_string();
+        if *num_node <= 5 {
+            cycle_min_node = 1;
+        } else {
+            cycle_min_node = *num_node - 5;
+        }
+    
+        while temp_count > *num_node && *num_node >= cycle_min_node {
+            if list.tail.param1.is_some() && list.tail.param2.is_some() {
+                res += &num_node.to_string();
                 res += " - {";
-                res += &Action::to_string(&self.tail.op);
+                res += &Action::to_string(&list.tail.op);
                 res += "-->";
-                res += &self.tail.param1.clone().unwrap();
+                res += &list.tail.param1.clone().unwrap();
                 res += "-->";
-                res += &self.tail.param2.clone().unwrap();
+                res += &list.tail.param2.clone().unwrap();
                 res += "}   ";
-            } else {
-                res += &self.count.to_string();
-                res += " - {";
-                res += &Action::to_string(&self.tail.op);
-                res += "-->";
-                res += &self.tail.param1.clone().unwrap();
-                res += "}   ";
+            // } else {
+            //     res += &temp.to_string();
+            //     res += " - {";
+            //     res += &Action::to_string(&self.tail.op);
+            //     res += "-->";
+            //     res += &self.tail.param1.clone().unwrap();
+            //     res += "}   ";
             }
 
-            self.count -= 1;
-            self.tail = self.tail.prev.clone().unwrap();
+            *num_node -= 1;
+            if list.tail.prev.is_some() {
+                list.tail = list.tail.prev.clone().unwrap();
+            }
         } 
         
         return res;
     }    
 
-    pub fn get_node(&mut self, num: u8) -> Option<&Node> {
-        let mut temp: u8 = self.count.clone();
+    pub fn get_node(&mut self, select_node: u8) -> Option<&Node> {
+        let mut temp: u8 = self.count.clone()-1;
 
-        while temp != num && temp > 0 {
+        if select_node == temp {
+            return Some(&self.tail);
+        } 
+
+        while temp > select_node && select_node > 1 {
             temp -= 1;
             if self.tail.prev.is_some() {
                 self.tail = self.tail.prev.clone().unwrap();
@@ -110,7 +124,7 @@ impl List {
             }
         }
 
-        return Some(&self.tail);
+        return None;
     }
 }
 

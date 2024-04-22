@@ -74,7 +74,12 @@ pub fn read(
             }
 
             match command {
-                "cache" => return cache::List::display_cache(list, num_node),
+                "cache" => {
+                    *num_node = list.count.clone() - 1;
+                    let mut temp_list = list.clone();
+
+                    return cache::List::display_cache(list, num_node)
+                },
                 "drop" => return controls::FileArray::drop(cur_holding).unwrap(),
                 "show" => return controls::FileArray::show(cur_holding).unwrap(),
                 "list" => return controls::Search::list_dir().unwrap(),
@@ -82,7 +87,7 @@ pub fn read(
                     let temp: u8 = FromStr::from_str(command).unwrap();
                 
                     if (temp as char).is_digit(36) == false {
-                        if temp > *num_node {
+                        if temp < list.count && temp > 1 {
                             let wrapped_node: Option<&cache::Node> = cache::List::get_node(list, temp);
                             match wrapped_node {
                                 Some(_) => {
