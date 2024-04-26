@@ -84,41 +84,43 @@ pub fn read(
                 "show" => return controls::FileArray::show(cur_holding).unwrap(),
                 "list" => return controls::Search::list_dir().unwrap(),
                 _ => {
-                    let temp: u8 = FromStr::from_str(command).unwrap();
+                    let mut temp: u8 = FromStr::from_str(command).unwrap();
+                    let mut temp_list: cache::List = list.clone();
                 
                     if (temp as char).is_digit(36) == false {
-                        if temp < list.count && temp > 1 {
-                            let wrapped_node: Option<&cache::Node> = cache::List::get_node(list, temp);
-                            match wrapped_node {
-                                Some(_) => {
-                                    let unwrapped_node: &cache::Node = wrapped_node.unwrap();
-                                    
-                                    let mut res: String = String::new();
-                                    res += &cache::Action::to_string(&unwrapped_node.op);
-                                    // res += &unwrapped_node.param1.clone().unwrap();
-                                    // res += &unwrapped_node.param2.clone().unwrap();
-                                    
-                                    return res;
+                           
+                        let wrapped_node: Option<&cache::Node> = cache::List::get_node(&mut temp_list, temp);
+
+                        match wrapped_node {
+                            Some(_) => {
+                                let unwrapped_node: &cache::Node = wrapped_node.unwrap();
+                                let mut res: String = String::new();
+
+                                res += &cache::Action::to_string(&unwrapped_node.op);
+                                res += " ";
+                                
+                                if unwrapped_node.param1.is_some() {
+                                    res += &unwrapped_node.param1.clone().unwrap();
                                 }
-                                None => return "The node you selected is not in the cache".to_string()
-                            };
+
+                                res += " ";
+
+                                if unwrapped_node.param2.is_some() {
+                                    res += &unwrapped_node.param2.clone().unwrap();
+                                }
+                                
+                                return res;
+                            }
+                            
+                            None => return "The node you selected is not in the cache".to_string()
                         }
-
-                        else {
-                            return "not num".to_string();
-                        };
-                    }
-                    else {
-                        return "not temo".to_string();
-                    }
-                }
+                    } else {
+                        return "Not a valid integer for node selection".to_string();
+                    } 
+                }    
             }
-
-            return "Command not accepted, please type -help to see the list of all commands.".to_string()
-
         } else {
-            return "Command not accepted, please type -help to see the list of all commands.".to_string()
+            return "Command not accepted, please type -help to see the list of all commands.".to_string();
         }
     }
 }
-

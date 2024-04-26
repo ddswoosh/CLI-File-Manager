@@ -29,13 +29,13 @@ impl ToString for Action {
     fn to_string(&self) -> String {
         match self {
             Action::dummy => return "dummy".to_string(),
-            Action::move_file => return "move_file".to_string(),
-            Action::change_directory => return "change_directory".to_string(),
-            Action::new_file => return "new_file".to_string(),
-            Action::delete_file => return "delete_file".to_string(),
-            Action::new_directory => return "new_directory".to_string(),
-            Action::delete_directory => return "delete_directory".to_string(),
-            Action::override_delete_directory => return "override_delete_directory".to_string(),
+            Action::move_file => return "Move File".to_string(),
+            Action::change_directory => return "Change Directory".to_string(),
+            Action::new_file => return "New File".to_string(),
+            Action::delete_file => return "Delete File".to_string(),
+            Action::new_directory => return "New Directory".to_string(),
+            Action::delete_directory => return "Delete Directory".to_string(),
+            Action::override_delete_directory => return "Override Delete Directory".to_string(),
         }
     }
 }
@@ -70,59 +70,66 @@ impl List {
     }
 
     pub fn display_cache(list: &mut List, num_node: &mut u8) -> String {
-        let mut res: String = String::new();
-        let mut temp_count: u8 = list.count.clone();
-        let mut cycle_min_node: u8 = 0;
-
-        if *num_node <= 5 {
-            cycle_min_node = 1;
+        if list.count == 1 {
+            return "Empty".to_string();
+            
         } else {
-            cycle_min_node = *num_node - 4;
-        }
-    
-        while temp_count > *num_node && *num_node >= cycle_min_node {
-            if list.tail.param1.is_some() && list.tail.param2.is_some() {
-                res += &num_node.to_string();
-                res += " - {";
-                res += &Action::to_string(&list.tail.op);
-                res += "-->";
-                res += &list.tail.param1.clone().unwrap();
-                res += "-->";
-                res += &list.tail.param2.clone().unwrap();
-                res += "}   ";
-
-            } else if list.tail.param1.is_some() {
-                res += &num_node.to_string();
-                res += " - {";
-                res += &Action::to_string(&list.tail.op);
-                res += "-->";
-                res += &list.tail.param1.clone().unwrap();
-                res += "}   ";
-
+            let mut res: String = String::new();
+            let mut temp_count: u8 = list.count.clone();
+            let mut cycle_min_node: u8 = 0;
+            
+            if *num_node <= 5 {
+                cycle_min_node = 1;
             } else {
-                return res;
+                cycle_min_node = *num_node - 4;
             }
-
-            *num_node -= 1;
-            if list.tail.prev.is_some() {
-                list.tail = list.tail.prev.clone().unwrap();
-            }
-        } 
         
-        return res;
+            while temp_count > *num_node && *num_node >= cycle_min_node {
+                if list.tail.param1.is_some() && list.tail.param2.is_some() {
+                    res += &num_node.to_string();
+                    res += " - {";
+                    res += &Action::to_string(&list.tail.op);
+                    res += "-->";
+                    res += &list.tail.param1.clone().unwrap();
+                    res += "-->";
+                    res += &list.tail.param2.clone().unwrap();
+                    res += "}   ";
+
+                } else if list.tail.param1.is_some() {
+                    res += &num_node.to_string();
+                    res += " - {";
+                    res += &Action::to_string(&list.tail.op);
+                    res += "-->";
+                    res += &list.tail.param1.clone().unwrap();
+                    res += "}   ";
+
+                } else {
+                    return res;
+                }
+
+                *num_node -= 1;
+                if list.tail.prev.is_some() {
+                    list.tail = list.tail.prev.clone().unwrap();
+                }
+            } 
+            
+            return res;
+        }
     }    
 
-    pub fn get_node(&mut self, select_node: u8) -> Option<&Node> {
-        let mut temp: u8 = self.count.clone()-1;
+    pub fn get_node(list: &mut List, select_node: u8) -> Option<&Node> {
+        let mut cur: u8 = list.count.clone();
+        
+        while list.count > select_node && select_node > 0 {
+            if select_node == cur-1 {
+                return Some(&list.tail);
+            } 
+    
+            cur -= 1;
 
-        if select_node == temp {
-            return Some(&self.tail);
-        } 
+            if list.tail.prev.is_some() {
+                list.tail = list.tail.prev.clone().unwrap();
 
-        while temp > select_node && select_node > 1 {
-            temp -= 1;
-            if self.tail.prev.is_some() {
-                self.tail = self.tail.prev.clone().unwrap();
             } else {
                 return None;
             }
