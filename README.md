@@ -10,3 +10,4 @@ This file manager provides more efficient and memory safe operations using Rust'
 * C#
 * Visual Studio
 * Windows OS
+* Docker
