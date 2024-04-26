@@ -77,7 +77,7 @@ impl List {
         if *num_node <= 5 {
             cycle_min_node = 1;
         } else {
-            cycle_min_node = *num_node - 5;
+            cycle_min_node = *num_node - 4;
         }
     
         while temp_count > *num_node && *num_node >= cycle_min_node {
@@ -90,13 +90,17 @@ impl List {
                 res += "-->";
                 res += &list.tail.param2.clone().unwrap();
                 res += "}   ";
-            // } else {
-            //     res += &temp.to_string();
-            //     res += " - {";
-            //     res += &Action::to_string(&self.tail.op);
-            //     res += "-->";
-            //     res += &self.tail.param1.clone().unwrap();
-            //     res += "}   ";
+
+            } else if list.tail.param1.is_some() {
+                res += &num_node.to_string();
+                res += " - {";
+                res += &Action::to_string(&list.tail.op);
+                res += "-->";
+                res += &list.tail.param1.clone().unwrap();
+                res += "}   ";
+
+            } else {
+                return res;
             }
 
             *num_node -= 1;
