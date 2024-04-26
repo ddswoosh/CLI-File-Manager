@@ -106,7 +106,7 @@ impl Mov {
         let attempt: Result<(), std::io::Error> = fs::rename(cur_path, to.clone());
 
         match attempt {
-            Ok(()) => {
+            Ok(_) => {
                 let mut node: cache::Node = cache::Node::new(cache::Action::move_file, Some(from), Some(to));
                 cache::List::add(list, Box::new(node));
 
@@ -119,7 +119,6 @@ impl Mov {
 
 impl Fil {
     pub fn new_file(file_name: String, file_ext: String, hm: &mut HashMap<String, String>, list: &mut cache::List) -> Result<String, String> {
-
         if hm.get(&file_ext).is_some() {
             let ext: &String = hm.get(&file_ext).unwrap();
             let name: String = file_name + &ext;
@@ -127,6 +126,7 @@ impl Fil {
             fs::File::create(name.clone());
 
             let mut node: cache::Node = cache::Node::new(cache::Action::new_file, Some(name), None);
+
             cache::List::add(list, Box::new(node));
 
             return Ok("Success".to_string());
@@ -141,8 +141,9 @@ impl Fil {
         let success = fs::remove_file(name.clone());
         
         match success {
-            Ok(()) => {
+            Ok(_) => {
                 let mut node: cache::Node = cache::Node::new(cache::Action::delete_file, Some(name), None);
+
                 cache::List::add(list, Box::new(node));
 
                 return Ok("Success".to_string());
@@ -163,7 +164,7 @@ impl Dir {
         let success: Result<(), std::io::Error> = fs::create_dir(dir_name.clone());
         
         match success {
-            Ok(()) => {
+            Ok(_) => {
                 let mut node: cache::Node = cache::Node::new(cache::Action::new_directory, Some(dir_name), None);
                 cache::List::add(list, Box::new(node));
 
@@ -185,7 +186,7 @@ impl Dir {
                         let del: Result<(), std::io::Error> = fs::remove_dir(dir_name.clone());
                 
                         match del {
-                            Ok(()) => {
+                            Ok(_) => {
                                 let mut node: cache::Node = cache::Node::new(cache::Action::delete_directory, Some(dir_name), None);
                                 cache::List::add(list, Box::new(node));
 
@@ -195,7 +196,7 @@ impl Dir {
                         }
                     },
 
-                    false => return Ok("Directory not found".to_string())
+                    false => return Ok("This is not a directory".to_string())
                 }
             },
             Err(_) => Ok("Directory not found".to_string())
@@ -224,7 +225,7 @@ impl Dir {
                         }
                     },
 
-                    false => return Ok("Directory not found".to_string())
+                    false => return Ok("This is not a directory".to_string())
                 }
             },
             Err(_) => Ok("Directory not found".to_string())
@@ -344,7 +345,7 @@ impl Environment {
             let success: Result<(), std::io::Error> = env::set_current_dir(new_path.clone());
 
                     match success {
-                        Ok(()) => {
+                        Ok(_) => {
                             let mut node: cache::Node = cache::Node::new(cache::Action::change_directory, Some(new_path), None);
                             cache::List::add(list, Box::new(node));
                           
@@ -363,7 +364,7 @@ impl Environment {
                     let success: Result<(), std::io::Error> = env::set_current_dir(cur);
 
                     match success {
-                        Ok(()) => return Ok("Success".to_string()),
+                        Ok(_) => return Ok("Success".to_string()),
                         Err(_) => return Err("Error changing directory".to_string())
                     }
                 }

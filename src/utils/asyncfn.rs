@@ -36,6 +36,7 @@ pub async fn run() {
 
     let mut num_node: u8 = 0;
     let mut list: cache::List = cache::run();
+    
     thread::sleep(Duration::from_secs(1));
 
     loop {

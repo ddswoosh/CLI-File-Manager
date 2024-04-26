@@ -15,7 +15,7 @@ pub struct Node {
     pub op: Action,
     pub param1: Option<String>,
     pub param2: Option<String>, 
-    next: Option<Box<Node>>,
+    pub next: Option<Box<Node>>,
     pub prev: Option<Box<Node>>,
 }
 
@@ -72,7 +72,7 @@ impl List {
     pub fn display_cache(list: &mut List, num_node: &mut u8) -> String {
         if list.count == 1 {
             return "Empty".to_string();
-            
+
         } else {
             let mut res: String = String::new();
             let mut temp_count: u8 = list.count.clone();

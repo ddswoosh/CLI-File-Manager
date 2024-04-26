@@ -20,7 +20,6 @@ pub fn read(
     *cur_command = cin.clone();
 
     let vec: Vec<&str> = cin.split_whitespace().collect();
-    
     let mut command: &str = "";
     let mut name: &str = "";
     let mut ext: &str = "";
