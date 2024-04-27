@@ -89,12 +89,20 @@ impl FileArray {
         }
     }
 
-    pub fn show(cur_holding: &[Option<PathBuf>; 1]) -> Result<String, String> {
-        if cur_holding[0] != None {
+    pub fn show_path(cur_holding: &[Option<PathBuf>; 1]) -> Result<String, String> {
+        if cur_holding[0].is_some() {
             return Ok(cur_holding[0].as_ref().unwrap().display().to_string());
         }
 
         return Ok("None".to_string());
+    }
+
+    pub fn show_node(cur_holding_node: &[Option<cache::Node>; 1]) -> Option<&cache::Node> {
+        if cur_holding_node[0].is_some() {
+            return Some(&cur_holding_node[0].as_ref().unwrap());
+        }
+
+        return None;
     }
 }
 

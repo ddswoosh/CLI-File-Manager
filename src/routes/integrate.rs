@@ -6,10 +6,11 @@ use std::str::FromStr;
 
 use crate::utils::cache;
 use crate::controllers::controls;
+use crate::controllers::revert;
 
 pub fn read(
-    extensions: &mut HashMap<String, String>, cur_holding: &mut [Option<PathBuf>; 1], 
-    editors: &mut HashMap<String, String>, cur_command: &mut String, 
+    extensions: &mut HashMap<String, String>, cur_holding_path: &mut [Option<PathBuf>; 1], 
+    cur_holding_node: &mut [Option<cache::Node>; 1], editors: &mut HashMap<String, String>, cur_command: &mut String, 
     list: &mut cache::List, num_node: &mut u8
 ) -> String {
 
@@ -44,7 +45,7 @@ pub fn read(
                 },
                 "mov" => {
                     if name == "holding".to_string(){
-                        return controls::Mov::mov(cur_holding[0].clone().unwrap().display().to_string(), ext.to_string(), list).unwrap()
+                        return controls::Mov::mov(cur_holding_path[0].clone().unwrap().display().to_string(), ext.to_string(), list).unwrap()
                         } 
                         return controls::Mov::mov(name.to_string(), ext.to_string(), list).unwrap()
                 },
@@ -60,7 +61,7 @@ pub fn read(
                 "dd" => return controls::Dir::delete_directory(name.to_string(), path, list).unwrap(),
                 "odd" => return controls::Dir::override_delete(name.to_string(), path, list).unwrap(),
                 "df" => return controls::Fil::delete_file(name.to_string(), path, list).unwrap(),
-                "grab" => return controls::FileArray::grab(name.into(), cur_holding).unwrap(),
+                "grab" => return controls::FileArray::grab(name.into(), cur_holding_path).unwrap(),
                 "cd" => return controls::Environment::change_dir(name.to_string(), list).unwrap(),
                 _ => return "Command not accepted, please type -help to see the list of all commands.".to_string()
             }
@@ -79,9 +80,10 @@ pub fn read(
 
                     return cache::List::display_cache(&mut temp_list, num_node)
                 },
-                "drop" => return controls::FileArray::drop(cur_holding).unwrap(),
-                "show" => return controls::FileArray::show(cur_holding).unwrap(),
+                "drop" => return controls::FileArray::drop(cur_holding_path).unwrap(),
+                "show" => return controls::FileArray::show_path(cur_holding_path).unwrap(),
                 "list" => return controls::Search::list_dir().unwrap(),
+                "shownode" => return controls::FileArray::show_node(cur_holding_node).unwrap().op.to_string(),
                 _ => {
                     let mut temp: u8 = FromStr::from_str(command).unwrap();
                     let mut temp_list: cache::List = list.clone();
@@ -93,20 +95,23 @@ pub fn read(
                         match wrapped_node {
                             Some(_) => {
                                 let unwrapped_node: &cache::Node = wrapped_node.unwrap();
+                                let temp_holding: cache::Node = unwrapped_node.clone();
                                 let mut res: String = String::new();
 
                                 res += &cache::Action::to_string(&unwrapped_node.op);
-                                res += " ";
+                                res += " - {";
                                 
                                 if unwrapped_node.param1.is_some() {
                                     res += &unwrapped_node.param1.clone().unwrap();
                                 }
 
-                                res += " ";
-
                                 if unwrapped_node.param2.is_some() {
+                                    res += "--";
                                     res += &unwrapped_node.param2.clone().unwrap();
                                 }
+                                res += "}";
+
+                                cur_holding_node[0] = Some(temp_holding);
                                 
                                 return res;
                             }

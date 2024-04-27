@@ -24,7 +24,8 @@ pub async fn run() {
     
     editors.insert("code".to_string(), "C:\\Users\\ddswoosh\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe".to_string());
 
-    let mut cur_holding: [Option<PathBuf>; 1] = [None];
+    let mut cur_holding_path: [Option<PathBuf>; 1] = [None];
+    let mut cur_holding_node: [Option<cache::Node>; 1] = [None];
     let mut extensions: HashMap<String, String> = controls::file_ext();
     let mut cur_command: String = String::new();
 
@@ -41,7 +42,8 @@ pub async fn run() {
 
     loop {
         if cur_command != fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").unwrap() {
-            let control_res: String = integrate::read(&mut extensions, &mut cur_holding, &mut editors, &mut cur_command, &mut list, &mut num_node);
+            let control_res: String = integrate::read(&mut extensions, &mut cur_holding_path, 
+            &mut cur_holding_node, &mut editors, &mut cur_command, &mut list, &mut num_node);
             let dump_res: bool = response::dump(&control_res);
 
             if control_res == "cache".to_string() {
