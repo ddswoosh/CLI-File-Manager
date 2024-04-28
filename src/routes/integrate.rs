@@ -83,7 +83,7 @@ pub fn read(
                 "drop" => return controls::FileArray::drop(cur_holding_path).unwrap(),
                 "show" => return controls::FileArray::show_path(cur_holding_path).unwrap(),
                 "list" => return controls::Search::list_dir().unwrap(),
-                "shownode" => return controls::FileArray::show_node(cur_holding_node).unwrap().op.to_string(),
+                "revert" => return revert::receive_node(cur_holding_node, list),
                 _ => {
                     let mut temp: u8 = FromStr::from_str(command).unwrap();
                     let mut temp_list: cache::List = list.clone();
