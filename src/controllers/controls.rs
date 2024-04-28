@@ -110,6 +110,7 @@ impl Mov {
     pub fn mov(from: String, to: String, list: &mut cache::List) -> Result<String, String> {
         let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(from.clone());
+        println!("{:?}", cur_path.display());
         
         let attempt: Result<(), std::io::Error> = fs::rename(cur_path, to.clone());
 
@@ -353,14 +354,9 @@ impl Environment {
             let success: Result<(), std::io::Error> = env::set_current_dir(new_path.clone());
 
                     match success {
-                        Ok(_) => {
-                            let mut node: cache::Node = cache::Node::new(cache::Action::change_directory, Some(new_path), None);
-                            cache::List::add(list, Box::new(node));
-                          
-                            return Ok("Success".to_string());
-                        },
+                        Ok(_) => return Ok("Success".to_string()),
                         Err(_) => return Err("Error changing directory".to_string())
-                    };
+                    }
 
         } else {
             let exists: Result<String, String> = Search::find_file(&change);

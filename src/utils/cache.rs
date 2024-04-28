@@ -1,7 +1,6 @@
 #[derive(Debug, Clone)]
 pub enum Action {
     dummy,
-    change_directory,
     new_file,
     delete_file,
     new_directory,
@@ -30,7 +29,6 @@ impl ToString for Action {
         match self {
             Action::dummy => return "dummy".to_string(),
             Action::move_file => return "Move File".to_string(),
-            Action::change_directory => return "Change Directory".to_string(),
             Action::new_file => return "New File".to_string(),
             Action::delete_file => return "Delete File".to_string(),
             Action::new_directory => return "New Directory".to_string(),
