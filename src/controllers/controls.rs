@@ -298,6 +298,7 @@ impl Search {
                     path.push(" -> File");
                     children.push(path);
                 }
+            println!("{:?}", children);
             }
         } else {
             return Err("This file name is not of type: Directory".to_string());
@@ -376,7 +377,7 @@ impl Environment {
                         Err(_) => return Err("Error changing directory".to_string())
                     }
                 }
-                Err(_) => return Err("Change to directory does not exsist within the scope of your current directory".to_string())
+                Err(_) => return Ok("Change to directory does not exsist within the scope of your current directory".to_string())
             }
         }
     }

@@ -16,7 +16,7 @@ pub fn read(
 
     let mut path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
 
-    let cin: String = fs::read_to_string("dump/command.txt").map_err(|e| e.to_string()).expect("Failed to read from CLI");
+    let cin: String = fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").map_err(|e| e.to_string()).expect("Failed to read from CLI");
     
     *cur_command = cin.clone();
 

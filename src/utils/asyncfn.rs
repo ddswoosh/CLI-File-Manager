@@ -58,6 +58,6 @@ pub async fn run() {
                 response::dump(&"Error writing to response to file, please restart the program".to_string());
             }
         }
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_millis(250));
     }
 }
