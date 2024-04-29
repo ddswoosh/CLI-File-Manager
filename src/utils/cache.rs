@@ -78,7 +78,7 @@ impl List {
             let mut cycle_min_node: u8 = 0;
             
             if *shift < 0 {
-                let temp: u8 = (*shift * -1).try_into().unwrap();
+                let temp: u8 = (*shift * -1) as u8;
                 *num_node -= temp;
             } else if *shift < temp_count as i8 {
                 *num_node += *shift as u8;
