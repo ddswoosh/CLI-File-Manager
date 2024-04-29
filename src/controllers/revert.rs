@@ -10,7 +10,7 @@ pub fn receive_node(cur_holding_node: &mut [Option<cache::Node>; 1], list: &mut 
     let mut path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
 
     if !node.is_some() {
-        return "Please select a node before proceeding to reversion".to_string();
+        return "Please select a node to stage before proceeding to reversion".to_string();
     }
 
     let temp = node.unwrap().clone();

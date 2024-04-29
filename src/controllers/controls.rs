@@ -36,7 +36,11 @@ cd (change directory) -> cd directory
 list (display all items in current directory) -> list
 addext (display all items in current directory) -> add javascript .js
 added (display all items in current directory) -> add vim ../vim.exe
-cache (display 5 most recent actions to be reverted) -> cache
+cache (display 5 most recent nodes to be reverted) -> cache
+cache- (display 5 less recent nodes to be reverted) -> cache-
+cache+ (display 5 morerecent nodes to be reverted) -> cache+
+integer (stage a node for reversion) -> 1
+revert (revert the operation stored in the staged node) -> revert
 ".to_string()
 }
 

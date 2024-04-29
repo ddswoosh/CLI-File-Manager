@@ -35,6 +35,7 @@ pub async fn run() {
         open_cli().await;
     });
 
+    let mut shift: i8 = 0;
     let mut num_node: u8 = 0;
     let mut list: cache::List = cache::run();
     
@@ -42,8 +43,11 @@ pub async fn run() {
 
     loop {
         if cur_command != fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").unwrap() {
-            let control_res: String = integrate::read(&mut extensions, &mut cur_holding_path, 
-            &mut cur_holding_node, &mut editors, &mut cur_command, &mut list, &mut num_node);
+            let control_res: String = integrate::read(
+                &mut extensions, &mut cur_holding_path, 
+                &mut cur_holding_node, &mut editors, &mut cur_command, &mut list, &mut num_node, &mut shift
+            );
+
             let dump_res: bool = response::dump(&control_res);
 
             if control_res == "cache".to_string() {

@@ -67,20 +67,29 @@ impl List {
        }
     }
 
-    pub fn display_cache(list: &mut List, num_node: &mut u8) -> String {
+    pub fn display_cache(list: &mut List, num_node: &mut u8, shift: &mut i8) -> String {
         if list.count == 1 {
             return "Empty".to_string();
+
 
         } else {
             let mut res: String = String::new();
             let mut temp_count: u8 = list.count.clone();
             let mut cycle_min_node: u8 = 0;
             
+            if *shift < 0 {
+                let temp: u8 = (*shift * -1).try_into().unwrap();
+                *num_node -= temp;
+            } else if *shift < temp_count as i8 {
+                *num_node += *shift as u8;
+            }
+
             if *num_node <= 5 {
                 cycle_min_node = 1;
             } else {
                 cycle_min_node = *num_node - 4;
             }
+
         
             while temp_count > *num_node && *num_node >= cycle_min_node {
                 if list.tail.param1.is_some() && list.tail.param2.is_some() {
