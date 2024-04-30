@@ -11,12 +11,12 @@ use crate::controllers::revert;
 pub fn read(
     extensions: &mut HashMap<String, String>, cur_holding_path: &mut [Option<PathBuf>; 1], 
     cur_holding_node: &mut [Option<cache::Node>; 1], editors: &mut HashMap<String, String>, cur_command: &mut String, 
-    list: &mut cache::List, num_node: &mut u8, shift: &mut i8
+    list: &mut cache::List, num_node: &mut u8, shift: &mut i8, cli_user_path: &String
 ) -> String {
 
     let mut path: PathBuf = controls::Environment::working_dir().expect("Non-fatal error");
-
-    let cin: String = fs::read_to_string("C:\\Users\\ddswoosh\\rust\\dump\\command.txt").map_err(|e| e.to_string()).expect("Failed to read from CLI");
+    let write_to: String = format!("{}\\dump\\command.txt", &cli_user_path);
+    let cin: String = fs::read_to_string(write_to).map_err(|e| e.to_string()).expect("Failed to read from CLI");
     
     *cur_command = cin.clone();
 
@@ -101,8 +101,7 @@ pub fn read(
                 "list" => return controls::Search::list_dir().unwrap(),
                 "revert" => return revert::receive_node(cur_holding_node, list, extensions),
                 num => {
-                    if num.parse::<u8>().is_ok() {
-                        
+                    if num.parse::<u8>().is_ok() { 
                         let mut temp: u8 = FromStr::from_str(command).unwrap();
                         let mut temp_list: cache::List = list.clone();
                     
