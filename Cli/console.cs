@@ -8,8 +8,10 @@ class Cli
         Console.Title = "Rust File Manager";
         Console.Write("Welcome to the Rust File Manager! Type -help at any time to display options for your current operation.\n");
 
-        string commandFilePath = @"C:\Users\ddswoosh\rust\dump\command.txt";
-        string responseFilePath = @"C:\Users\ddswoosh\rust\dump\response.txt";
+        string dumpPath = Directory.GetCurrentDirectory();
+
+        string commandFilePath = @$"{dumpPath}\dump\command.txt";
+        string responseFilePath = @$"{dumpPath}\dump\response.txt";
 
         while (true)
         {
@@ -28,7 +30,7 @@ class Cli
             string userInput = Console.ReadLine();
 
             WriteCommandToFile(userInput, commandFilePath);
-            Thread.Sleep(1000);
+            Thread.Sleep(250);
 
             string response = ReadResponseFromFile(responseFilePath);
 
