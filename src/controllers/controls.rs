@@ -24,7 +24,7 @@ pub fn help() -> String {
 "    
 nd (create directory) -> nd test
 dd (delete empty directory) -> dd test 
-nd (delete non-empty directory) -> odd test 
+odd (delete non-empty directory) -> odd test 
 nf (create file) -> nd test python 
 df (delete file) -> df test.py 
 open (open file in an editor) -> open code test.py 
@@ -205,7 +205,7 @@ impl Dir {
 
                                 return Ok("Success".to_string());
                             },
-                            Err(_) => return Ok("The directory is not empty, please remove all contents or type 'oddir {directory name}' if you want to force delete all child content".to_string()),
+                            Err(_) => return Ok("The directory is not empty, please remove all contents or type 'odd {directory name}' if you want to force delete all child content".to_string()),
                         }
                     },
 
@@ -284,21 +284,24 @@ impl Search {
     pub fn list_dir() -> Result<String, String> {
         let mut children: Vec<PathBuf> = vec![];
         let mut cur: PathBuf = Environment::working_dir().unwrap();
-        
+       
         if cur.is_dir() {
             for child in fs::read_dir(cur).unwrap() {
+            
                 let child: fs::DirEntry = child.unwrap();
                 let mut path: PathBuf = child.path();
-    
+
+                let mut temp: String = path.display().to_string();
+                temp = temp[..temp.len()].to_string();
+                
                 if path.is_dir() {
-                    path.push(" -> Directory");
-                    children.push(path);
+                    temp += " -> Directory";
+                    children.push(temp.into());
 
                 } else {
-                    path.push(" -> File");
-                    children.push(path);
+                    temp += " -> File";
+                    children.push(temp.into());
                 }
-            println!("{:?}", children);
             }
         } else {
             return Err("This file name is not of type: Directory".to_string());
@@ -308,13 +311,42 @@ impl Search {
             return Err("Directory has no children".to_string());
 
         } else {
-            let res: &mut PathBuf = &mut Default::default();
-            
-            for i in 0..children.len() {
-                res.push(&children[i]);
-            }
+            let mut res: String = String::new();
 
-            return Ok(res.display().to_string());
+            for i in 0..children.len() {
+                let mut temp: String = children[i].display().to_string();
+                let mut j: usize = 0;
+
+                if temp.chars().rev().nth(0) == Some('y') {
+                    for i in temp.chars().rev() {
+                        if i == '\\' && j > 14 {
+                            break;
+                        }
+                        j += 1;
+                    }
+                 } else {
+                    for i in temp.chars().rev() {
+                        if i == '\\' && j > 9 {
+                            break;
+                        }
+                        j += 1;
+                    }
+                }
+
+                j = temp.len() - j;
+
+                for i in 0..temp.len() {
+                    if i == j {
+                        temp = temp[j..].to_string();
+                        break;
+                    }
+                }
+
+                res += &(temp);
+                res += "\n\n";
+            }
+        
+            return Ok(res);
         }
     }
 
