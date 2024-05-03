@@ -28,18 +28,16 @@ pub async fn run() {
     let mut editors: HashMap<String, String> = HashMap::new();
     let mut j: usize = 0;
 
-    for i in 0..cli_user_path.len() {
-        if cli_user_path.chars().rev().nth(i).unwrap() == '\\' {
-            j = i - 2;
-        }
-    }
-
-    for i in 0..cli_user_path.len() {
-        if i == j {
-            break;
+    for i in cli_user_path.chars() {
+        if j < 8 {
+            j += 1;
+            continue
         }
 
-        global_user_path += &cli_user_path.chars().nth(i).unwrap().to_string();    
+        if i == '\\' {
+            global_user_path = cli_user_path[..j].to_string();
+        }
+        j += 1;
     }
 
     let path_to_vscode: String = format!("{}\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe", &global_user_path);
