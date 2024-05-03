@@ -2,6 +2,10 @@
 name = "rust"
 version = "0.1.0"
 edition = "2021"
+build = "src/build.rs"
+
+[build-dependencies]
+winres = "0.1"
 
 [dependencies]
 tokio = {version = "1", features = ["full"]}
