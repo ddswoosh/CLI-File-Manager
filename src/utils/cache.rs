@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub enum Action {
     dummy,
     new_file,
@@ -9,7 +9,7 @@ pub enum Action {
     move_file,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Node {
     pub op: Action,
     pub param1: Option<String>,
