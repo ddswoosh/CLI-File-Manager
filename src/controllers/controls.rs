@@ -25,7 +25,7 @@ pub fn help() -> String {
 nd (create directory) -> nd test
 dd (delete empty directory) -> dd test 
 odd (delete non-empty directory) -> odd test 
-nf (create file) -> nd test python 
+nf (create file) -> nf test python 
 df (delete file) -> df test.py 
 open (open file in an editor) -> open code test.py 
 grab (store file/directory in an array) -> grab test.py 
