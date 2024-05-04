@@ -31,7 +31,7 @@ open (open file in an editor) -> open code test.py
 grab (store file/directory in an array) -> grab test.py 
 show (display file in the grab array) -> show 
 drop (drop file/directory from array) -> drop 
-mov (move file/directory) -> mov test.py{or type current to use grabbed file} new/test.py 
+mov (move file/directory) -> mov test.py {or type holding to use grabbed file} new/test.py 
 cd (change directory) -> cd directory or cd back to pop up a level
 list (display all items in current directory) -> list
 addext (display all items in current directory) -> add javascript .js
@@ -260,7 +260,7 @@ impl Open {
     
                     match status {
                         Ok(_) => return Ok("Success".to_string()),
-                        Err(_) => return Err("Could not open editor".to_string())
+                        Err(_) => return Ok("Could not open editor".to_string())
                     };     
                 } else {
                     return Ok("Editor not found, if you want to add your own editor, type help and follow the add editor instructions".to_string())
