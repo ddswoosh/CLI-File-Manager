@@ -304,11 +304,11 @@ impl Search {
                 }
             }
         } else {
-            return Err("This file name is not of type: Directory".to_string());
+            return Ok("This file name is not of type: Directory".to_string());
         }
 
         if children.len() == 0 {
-            return Err("Directory has no children".to_string());
+            return Ok("Directory has no children".to_string());
 
         } else {
             let mut res: String = String::new();
@@ -392,7 +392,7 @@ impl Environment {
 
                     match success {
                         Ok(_) => return Ok("Success".to_string()),
-                        Err(_) => return Err("Error changing directory".to_string())
+                        Err(_) => return Ok("Error changing directory".to_string())
                     }
 
         } else {
@@ -406,7 +406,7 @@ impl Environment {
 
                     match success {
                         Ok(_) => return Ok("Success".to_string()),
-                        Err(_) => return Err("Error changing directory".to_string())
+                        Err(_) => return Ok("Error changing directory".to_string())
                     }
                 }
                 Err(_) => return Ok("Change to directory does not exsist within the scope of your current directory".to_string())
