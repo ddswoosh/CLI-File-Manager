@@ -43,6 +43,38 @@ pub fn receive_node(cur_holding_node: &mut [Option<cache::Node>; 1], list: &mut 
 
             return controls::Fil::new_file(name, full_ext, extensions, list).unwrap();
         },
-        cache::Action::move_file => return controls::Mov::mov(temp.param1.expect("Empty parameter"), temp.param2.expect("Empty parameter"), list).unwrap()       
+        cache::Action::move_file => {
+            let mut temp_buf: PathBuf = controls::Environment::working_dir().unwrap();
+            let mut full_path: String = String::from(temp_buf.display().to_string());
+            let mut j: usize = 0;
+
+            for i in temp.param1.clone().expect("Empty parameter").chars().rev() {
+                if i == '\\' {
+                    break;
+                }
+
+                j += 1;
+            }
+
+            let part_path: String = temp.param1.clone().unwrap()[..j].to_string();
+            let mut temp_vec: Vec<char> = vec![];
+            
+            for i in part_path.chars() {
+                temp_vec.push(i);
+            }
+
+            full_path += &"\\";
+
+            for i in temp_vec.iter() {
+                if *i == '/' {
+                    full_path += &"\\";
+
+                } else {
+                    full_path += &i.to_string();
+                }
+            }
+
+            return controls::Mov::mov(full_path, temp.param2.expect("Empty parameter"), list).unwrap()     
+        }  
     }
 }

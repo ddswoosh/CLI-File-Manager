@@ -114,7 +114,6 @@ impl Mov {
     pub fn mov(from: String, to: String, list: &mut cache::List) -> Result<String, String> {
         let mut cur_path: PathBuf = Environment::working_dir().expect("Err");
         cur_path.push(from.clone());
-        println!("{:?}", cur_path.display());
         
         let attempt: Result<(), std::io::Error> = fs::rename(cur_path, to.clone());
 
