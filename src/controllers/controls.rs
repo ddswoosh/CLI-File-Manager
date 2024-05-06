@@ -136,7 +136,7 @@ impl Copy {
         let result: Result<u64, std::io::Error> = fs::copy(from, to);
         
         match result {
-            Ok(_) => return Ok("test".to_string()),
+            Ok(_) => return Ok("Success".to_string()),
             Err(_) => return Err("Copy failed".to_string())
         }
     }
