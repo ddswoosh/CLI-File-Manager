@@ -74,7 +74,7 @@ pub fn receive_node(cur_holding_node: &mut [Option<cache::Node>; 1], list: &mut 
                 }
             }
 
-            return controls::Mov::mov(full_path, temp.param2.expect("Empty parameter"), list).unwrap()     
+            return controls::Mov::mov(temp.param2.expect("Empty parameter"), full_path, list).unwrap()     
         }  
     }
 }

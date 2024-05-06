@@ -39,6 +39,7 @@ pub fn read(
                 "nf" => return controls::Fil::new_file(name.to_string(), ext.to_string(), extensions, list).unwrap(),
                 "open" => return controls::Open::open(ext.to_string(), name.to_string(), editors).unwrap(),
                 "added" => return controls::Open::add_editor(name.to_string(), ext.to_string(), editors).unwrap(),
+                "copy" => return controls::Copy::copy(name.to_string(), ext.to_string()).unwrap(),
                 "addext" => {
                     controls::file_ext_insert(name.to_string(), ext.to_string(), extensions);
                     return "success".to_string();

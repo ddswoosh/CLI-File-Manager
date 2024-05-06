@@ -18,6 +18,7 @@ pub struct Fil;
 pub struct Dir;
 pub struct Open; 
 pub struct Search;
+pub struct Copy;
 
 pub fn help() -> String {
     return 
@@ -125,6 +126,17 @@ impl Mov {
                 return Ok("Success".to_string());
             },
             Err(_) => return Ok("Destination is not valid, please try again.".to_string())
+        }
+    }
+}
+
+impl Copy {
+    pub fn copy(from: String, to: String) -> Result<String, String> {
+        let result: Result<u64, std::io::Error> = fs::copy(from, to);
+        
+        match result {
+            Ok(_) => return Ok("test".to_string()),
+            Err(_) => return Err("Copy failed".to_string())
         }
     }
 }
