@@ -29,7 +29,7 @@ class Cli
 
             string userInput = Console.ReadLine();
 
-            WriteCommandToFile(userInput, commandFilePath);
+            WriteCommandToFile(userInput, commandFilePath, responseFilePath);
             Thread.Sleep(250);
 
             string response = ReadResponseFromFile(responseFilePath);
@@ -39,15 +39,30 @@ class Cli
         }
     }
 
-    private void WriteCommandToFile(string command, string filePath)
+    private void WriteCommandToFile(string command, string commandFilePath, string responseFilePath)
     {
-        try
+        if (command == "c")
         {
-            File.WriteAllText(filePath, command);
-        }
-        catch (Exception ex)
+            Console.Clear();
+            try
+            {
+                File.WriteAllText(responseFilePath, "");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not write to file {ex.Message}");
+            }
+        } 
+        else
         {
-            Console.WriteLine($"Could not write to file {ex.Message}");
+            try
+            {
+                File.WriteAllText(commandFilePath, command);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not write to file {ex.Message}");
+            }
         }
     }
 
