@@ -72,7 +72,7 @@ pub async fn run() {
             );
 
             let dump_res: bool = response::dump(&control_res, &cli_user_path);
-
+ 
             if control_res == "cache".to_string() {
                 let dump_res: bool = response::dump(&"Please type a node number seen above to commence reversion".to_string(), &cli_user_path);
             }

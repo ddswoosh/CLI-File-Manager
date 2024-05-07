@@ -33,7 +33,7 @@ grab (store file/directory in an array) -> grab test.py
 show (display file in the grab array) -> show 
 drop (drop file/directory from array) -> drop 
 mov (move file/directory) -> mov test.py {or type holding to use grabbed file} new/test.py 
-mov (move file/directory) -> copy test.py new/test.py 
+copy (copy file/directory) -> copy test.py new/test.py 
 cd (change directory) -> cd directory or cd back to pop up a level
 list (display all items in current directory) -> list
 addext (display all items in current directory) -> add javascript .js
@@ -43,6 +43,7 @@ cache- (display 5 less recent nodes to be reverted) -> cache-
 cache+ (display 5 morerecent nodes to be reverted) -> cache+
 integer (stage a node for reversion) -> 1
 revert (revert the operation stored in the staged node) -> revert
+c (clear screen) -> c
 ".to_string()
 }
 
