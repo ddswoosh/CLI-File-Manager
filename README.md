@@ -11,3 +11,12 @@ This file manager provides more efficient and memory safe operations using Rust'
 * Visual Studio
 * Windows OS
 * Docker
+
+
+# Installation
+1. Download the .NET 8.0 Runtime (x64) if you do not already have Visaul Studio downloaded. You do not need the entire .NET Framework just the runtime.
+https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-8.0.4-windows-x64-installer 
+2. 'git clone https://github.com/ddswoosh/cli-file-manager'
+3. Run the cli.exe file
+
+4. 
