@@ -1,4 +1,5 @@
-# Command Line File Manager
+# Command Line File Manager (Completed)
+# For any feature requests please add an issue.
 
 This CLI uses the native Windows terminal, built with visual studio and vs code. The terminal itself was developed with C#, with all underlying logic handled by Rust. C# passes input and recieves output from a dump via text file, controlled by Rust modules. 
 
